@@ -23,7 +23,8 @@ let%expect_test "stable bin_prot digests" =
     ; "Pot_job", [%bin_digest: Pot_job.Stable.V1.t]
     ]
     ~f:(fun (name, digest) -> printf "%-15s %s\n" name digest);
-  [%expect {|
+  [%expect
+    {|
     Pot_id          d9a8da25d5656b016fb4dbdc2e4197fb
     Owner_id        d9a8da25d5656b016fb4dbdc2e4197fb
     Budget_id       d9a8da25d5656b016fb4dbdc2e4197fb
@@ -59,7 +60,8 @@ let%expect_test "round trips" =
   let prefs = Preferences.set_payee_rule prefs (Name "landlord") (Some (cat "bills")) in
   round_trip (module Preferences.Stable.V1) ~equal:Preferences.equal prefs;
   print_s [%sexp (prefs : Preferences.t)];
-  [%expect {|
+  [%expect
+    {|
     ((overrides ()) (merchants ((cafe gifts))) (payees (((Name landlord) bills)))
      (schedules ()))
     |}]

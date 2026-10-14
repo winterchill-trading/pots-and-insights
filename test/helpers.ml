@@ -36,8 +36,8 @@ let apply b event =
 
 let post b entry = apply b (Posted entry)
 
-(** Balances with the customer's account, a bank account, [pots] opened and [deposit]
-    paid into the customer's account. *)
+(** Balances with the customer's account, a bank account, [pots] opened and [deposit] paid
+    into the customer's account. *)
 let ledger ?(deposit = eur "1000.00") ~pots () =
   let b =
     List.fold
@@ -66,7 +66,6 @@ let available b =
 ;;
 
 let refusal r = Pot.Refusal.sexp_of_t r
-
 let cat = Category.of_string
 
 (** A completed item on the customer's account; [amount] is signed. *)

@@ -15,7 +15,9 @@ module Env = struct
 
   let items ~account:a ~from ~until =
     List.filter !statement ~f:(fun (i : Item.t) ->
-      Ledger.Account_id.equal i.account a && Time_ns.( >= ) i.at from && Time_ns.( < ) i.at until)
+      Ledger.Account_id.equal i.account a
+      && Time_ns.( >= ) i.at from
+      && Time_ns.( < ) i.at until)
   ;;
 
   let append entry =
@@ -63,8 +65,10 @@ let%expect_test "weekly top-ups stop at the goal" =
     show_executions (Runner.tick runner);
     S.Clock.Manual.advance clock (Time_ns.Span.of_day 7.)
   done;
-  print_s [%sexp (Pot_booking.balance !state p : Money.Amount.t), (available !state : string)];
-  [%expect {|
+  print_s
+    [%sexp (Pot_booking.balance !state p : Money.Amount.t), (available !state : string)];
+  [%expect
+    {|
     (((schedule save-weekly) (due_date 2026-10-14))
      (Ran (attempt 1)
       (outcome (Succeeded (reference pot-auto:save-weekly:2026-10-14)))))
@@ -93,10 +97,16 @@ let%expect_test "a retried run books once" =
     }
   in
   let first = Job.run (Top_up top_up) ctx in
-  let second = Job.run (Top_up top_up) { ctx with attempt = 2; now = Time_ns.add t0 Time_ns.Span.hour } in
-  print_s [%sexp (first : (string, string) Result.t), (second : (string, string) Result.t)];
+  let second =
+    Job.run
+      (Top_up top_up)
+      { ctx with attempt = 2; now = Time_ns.add t0 Time_ns.Span.hour }
+  in
+  print_s
+    [%sexp (first : (string, string) Result.t), (second : (string, string) Result.t)];
   print_s [%sexp (!appended : int), (Pot_booking.balance !state p : Money.Amount.t)];
-  [%expect {|
+  [%expect
+    {|
     ((Ok pot-auto:s:2026-10-14) (Ok pot-auto:s:2026-10-14))
     (1 "10.00 EUR")
     |}]
@@ -131,7 +141,8 @@ let%expect_test "daily round-up sweeps cover the previous UTC day" =
   let sweep : Pot_job.t = Round_up_sweep { rule; account } in
   print_s
     [%sexp
-      (Job.validate sweep (S.Recurrence.create_exn Weekly ~start:today ()) : unit Or_error.t)];
+      (Job.validate sweep (S.Recurrence.create_exn Weekly ~start:today ())
+       : unit Or_error.t)];
   let ctx : S.Job.Context.t =
     { key = S.Run_key.create (S.Schedule_id.create_exn "sweep") today
     ; index = 0
@@ -141,7 +152,8 @@ let%expect_test "daily round-up sweeps cover the previous UTC day" =
   in
   print_s [%sexp (Job.run sweep ctx : (string, string) Result.t)];
   print_s [%sexp (Pot_booking.balance !state p : Money.Amount.t)];
-  [%expect {|
+  [%expect
+    {|
     (Error "round-up sweeps run every day")
     (Ok pot-auto:sweep:2026-10-14)
     "0.85 EUR"

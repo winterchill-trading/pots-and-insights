@@ -58,7 +58,9 @@ let%expect_test "pace is the even share of the month elapsed" =
 
 let%expect_test "creation refusals" =
   let b = budget (Category (cat "groceries")) "300.00" |> ok in
-  let show r = print_s [%sexp (Result.error r |> Option.map ~f:Budget.Refusal.code : string option)] in
+  let show r =
+    print_s [%sexp (Result.error r |> Option.map ~f:Budget.Refusal.code : string option)]
+  in
   show (budget (Category (cat "income")) "300.00");
   show (budget Overall "0.00");
   show (budget Overall "10000000000.01");
@@ -77,7 +79,13 @@ let%expect_test "creation refusals" =
   show (budget ~id:"b2" ~existing:[ b ] (Category (cat "groceries")) "50.00");
   (* Once the first one is removed from November, a new one may start then. *)
   let removed = Budget.remove b ~from:(month "2026-11") |> ok in
-  show (budget ~id:"b2" ~existing:[ removed ] ~from:(month "2026-11") (Category (cat "groceries")) "50.00");
+  show
+    (budget
+       ~id:"b2"
+       ~existing:[ removed ]
+       ~from:(month "2026-11")
+       (Category (cat "groceries"))
+       "50.00");
   [%expect
     {|
     (unknown_category)
@@ -95,12 +103,14 @@ let%expect_test "amounts apply from their month onwards" =
   let b = Budget.set_amount b ~amount:(eur "400.00") ~from:(month "2026-12") |> ok in
   let b = Budget.set_amount b ~amount:(eur "350.00") ~from:(month "2026-11") |> ok in
   let b = Budget.remove b ~from:(month "2027-02") |> ok in
-  List.iter [ "2026-09"; "2026-10"; "2026-11"; "2026-12"; "2027-01"; "2027-02" ] ~f:(fun m ->
-    print_s [%sexp (m : string), (Budget.amount_for b (month m) : Money.Amount.t option)]);
+  List.iter
+    [ "2026-09"; "2026-10"; "2026-11"; "2026-12"; "2027-01"; "2027-02" ]
+    ~f:(fun m ->
+      print_s
+        [%sexp (m : string), (Budget.amount_for b (month m) : Money.Amount.t option)]);
   print_s
     [%sexp
-      (Budget.set_amount b ~amount:(eur "1.00") ~from:(month "2027-03")
-       |> Result.error
+      (Budget.set_amount b ~amount:(eur "1.00") ~from:(month "2027-03") |> Result.error
        : Budget.Refusal.t option)];
   [%expect
     {|
@@ -115,9 +125,17 @@ let%expect_test "amounts apply from their month onwards" =
 ;;
 
 let items =
-  [ item ~id:"i1" ~at:(time "2026-10-02 10:00:00Z") ~amount:"-200.00" (card ~category:"groceries" "Market")
+  [ item
+      ~id:"i1"
+      ~at:(time "2026-10-02 10:00:00Z")
+      ~amount:"-200.00"
+      (card ~category:"groceries" "Market")
   ; item ~id:"i2" ~at:(time "2026-10-03 10:00:00Z") ~amount:"-45.00" (card "Corner Cafe")
-  ; item ~id:"i3" ~at:(time "2026-10-04 10:00:00Z") ~amount:"-30.00" (card ~category:"shopping" "Shop")
+  ; item
+      ~id:"i3"
+      ~at:(time "2026-10-04 10:00:00Z")
+      ~amount:"-30.00"
+      (card ~category:"shopping" "Shop")
   ]
 ;;
 
@@ -130,18 +148,30 @@ let%expect_test "a month view and the notices a new purchase raises" =
   in
   let now = time "2026-10-14 09:00:00Z" in
   let view items =
-    Budget_month.compute ctx ~budgets ~account ~currency:Money.Currency.eur ~month:oct ~now items
+    Budget_month.compute
+      ctx
+      ~budgets
+      ~account
+      ~currency:Money.Currency.eur
+      ~month:oct
+      ~now
+      items
   in
   let before = view items in
   print_s [%sexp (before : Budget_month.t)];
   let after =
     view
-      (item ~id:"i4" ~at:(time "2026-10-14 08:00:00Z") ~amount:"-6.00" (card "Corner Cafe")
+      (item
+         ~id:"i4"
+         ~at:(time "2026-10-14 08:00:00Z")
+         ~amount:"-6.00"
+         (card "Corner Cafe")
        :: items)
   in
   List.iter (Notice.budget_changes ~before ~after) ~f:(fun n ->
     print_s [%sexp (Notice.key n : string), (n : Notice.t)]);
-  [%expect {|
+  [%expect
+    {|
     ((account customer:1/eur) (currency EUR) (month 2026-10) (current true)
      (overall
       (((budget overall) (target Overall) (month 2026-10) (amount "300.00 EUR")
@@ -168,12 +198,14 @@ let%expect_test "goal reached" =
   let p = pot ~goal:(eur "100.00") () in
   let show before after =
     print_s
-      [%sexp (Notice.goal_reached p ~before:(eur before) ~after:(eur after) : Notice.t option)]
+      [%sexp
+        (Notice.goal_reached p ~before:(eur before) ~after:(eur after) : Notice.t option)]
   in
   show "50.00" "99.99";
   show "50.00" "100.00";
   show "100.00" "120.00";
-  [%expect {|
+  [%expect
+    {|
     ()
     ((Goal_reached (pot pot-1) (goal "100.00 EUR") (balance "100.00 EUR")))
     ()
@@ -188,7 +220,13 @@ let%test_unit "status agrees with remaining and percent" =
     amount, spent
   in
   Quickcheck.test gen ~f:(fun (amount, spent) ->
-    let b = budget Overall (Money.Amount.to_decimal_string (Money.Amount.of_minor_units_int Money.Currency.eur amount)) |> ok in
+    let b =
+      budget
+        Overall
+        (Money.Amount.to_decimal_string
+           (Money.Amount.of_minor_units_int Money.Currency.eur amount))
+      |> ok
+    in
     let p =
       Budget.progress
         b

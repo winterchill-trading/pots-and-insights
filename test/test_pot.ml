@@ -105,7 +105,9 @@ let%expect_test "progress rounds down and caps at 100" =
     print_s
       [%sexp
         (b : string), (Pot.progress p ~balance:(eur b) : Pot.Progress.t option Or_error.t)]);
-  print_s [%sexp (Pot.progress (pot ()) ~balance:(eur "5.00") : Pot.Progress.t option Or_error.t)];
+  print_s
+    [%sexp
+      (Pot.progress (pot ()) ~balance:(eur "5.00") : Pot.Progress.t option Or_error.t)];
   [%expect
     {|
     (0.00 (Ok (((percent 0) (remaining "300.00 EUR") (reached false)))))

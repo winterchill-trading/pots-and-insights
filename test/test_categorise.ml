@@ -37,9 +37,13 @@ let%expect_test "income, internal and refunds" =
   let purchase = item ~id:"p1" ~amount:"-30.00" (card ~category:"shopping" "Shoe Shop") in
   let refund = item ~id:"r1" ~amount:"10.00" ~refund_of:"p1" (card "Shoe Shop") in
   let prefs =
-    Preferences.set_override Preferences.empty (Item_id.of_string "p1") (Some (cat "gifts"))
+    Preferences.set_override
+      Preferences.empty
+      (Item_id.of_string "p1")
+      (Some (cat "gifts"))
   in
-  show (item ~amount:"2500.00" ~description:"Salary" (Incoming { payer = Some "Employer" }));
+  show
+    (item ~amount:"2500.00" ~description:"Salary" (Incoming { payer = Some "Employer" }));
   show (item ~amount:"-50.00" Internal);
   show ~prefs ~original:purchase refund;
   (* Without its purchase, a refund is filed like a purchase from its merchant. *)
@@ -54,7 +58,9 @@ let%expect_test "income, internal and refunds" =
 ;;
 
 let%expect_test "user choices and their precedence" =
-  let coffee = item ~id:"c1" ~amount:"-3.50" (card ~category:"eating_out" "ACME Coffee #12") in
+  let coffee =
+    item ~id:"c1" ~amount:"-3.50" (card ~category:"eating_out" "ACME Coffee #12")
+  in
   let rent =
     item
       ~id:"s1"
@@ -64,20 +70,32 @@ let%expect_test "user choices and their precedence" =
   in
   let ok r = Result.ok r |> Option.value_exn in
   let prefs =
-    Categorise.recategorise catalogue Preferences.empty coffee All_from_merchant (Some (cat "groceries"))
+    Categorise.recategorise
+      catalogue
+      Preferences.empty
+      coffee
+      All_from_merchant
+      (Some (cat "groceries"))
     |> ok
   in
   (* The rule matches the merchant by its match key, not the exact text. *)
   show ~prefs coffee;
   show ~prefs (item ~id:"c2" ~amount:"-4.00" (card "acme coffee 12"));
-  let prefs = Categorise.recategorise catalogue prefs coffee One (Some (cat "gifts")) |> ok in
+  let prefs =
+    Categorise.recategorise catalogue prefs coffee One (Some (cat "gifts")) |> ok
+  in
   show ~prefs coffee;
   let prefs =
-    Categorise.set_payee_category catalogue prefs (Id "payee-7") (Some (cat "health")) |> ok
+    Categorise.set_payee_category catalogue prefs (Id "payee-7") (Some (cat "health"))
+    |> ok
   in
   show ~prefs rent;
   let prefs =
-    Categorise.set_schedule_category catalogue prefs ~schedule:"so-1" (Some (cat "education"))
+    Categorise.set_schedule_category
+      catalogue
+      prefs
+      ~schedule:"so-1"
+      (Some (cat "education"))
     |> ok
   in
   show ~prefs rent;
@@ -98,10 +116,16 @@ let%expect_test "a wider scope replaces the item's own override" =
   let coffee = item ~id:"c1" ~amount:"-3.50" (card "Cafe Blue") in
   let ok r = Result.ok r |> Option.value_exn in
   let prefs =
-    Categorise.recategorise catalogue Preferences.empty coffee One (Some (cat "gifts")) |> ok
+    Categorise.recategorise catalogue Preferences.empty coffee One (Some (cat "gifts"))
+    |> ok
   in
   let prefs =
-    Categorise.recategorise catalogue prefs coffee All_from_merchant (Some (cat "shopping"))
+    Categorise.recategorise
+      catalogue
+      prefs
+      coffee
+      All_from_merchant
+      (Some (cat "shopping"))
     |> ok
   in
   show ~prefs coffee;
@@ -150,10 +174,17 @@ let%expect_test "assign_all pairs refunds with their purchases" =
     ]
   in
   let prefs =
-    Preferences.set_merchant_rule Preferences.empty ~merchant:"Rail Co" (Some (cat "transport"))
+    Preferences.set_merchant_rule
+      Preferences.empty
+      ~merchant:"Rail Co"
+      (Some (cat "transport"))
   in
   List.iter (Categorise.assign_all catalogue keywords prefs items) ~f:(fun (i, a) ->
-    print_s [%sexp (i.id : Item_id.t), (a.category : Category.t), (Categorise.Source.name a.source : string)]);
+    print_s
+      [%sexp
+        (i.id : Item_id.t)
+        , (a.category : Category.t)
+        , (Categorise.Source.name a.source : string)]);
   [%expect {|
     (p1 transport merchant_rule)
     (r1 transport purchase) |}]
@@ -175,7 +206,11 @@ let%test_unit "every item gets a category of the right group" =
         ]
     in
     let%map override = Option.quickcheck_generator Category.quickcheck_generator in
-    ( item ~amount:(Money.Amount.to_decimal_string (Money.Amount.of_minor_units_int Money.Currency.eur cents)) source
+    ( item
+        ~amount:
+          (Money.Amount.to_decimal_string
+             (Money.Amount.of_minor_units_int Money.Currency.eur cents))
+        source
     , override )
   in
   Quickcheck.test gen ~f:(fun (i, override) ->
@@ -187,6 +222,10 @@ let%test_unit "every item gets a category of the right group" =
       | Income -> Income
       | Internal -> Neutral
     in
-    [%test_result: Catalogue.Group.t option] (Catalogue.group catalogue a.category) ~expect:(Some expected);
-    [%test_result: bool] a.recategorisable ~expect:(Item.Flow.equal (Item.flow i) Spending))
+    [%test_result: Catalogue.Group.t option]
+      (Catalogue.group catalogue a.category)
+      ~expect:(Some expected);
+    [%test_result: bool]
+      a.recategorisable
+      ~expect:(Item.Flow.equal (Item.flow i) Spending))
 ;;

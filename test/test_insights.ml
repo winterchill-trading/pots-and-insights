@@ -6,16 +6,43 @@ let month s = Or_error.ok_exn (Calendar_month.of_string s)
 let ctx = Insights.Context.default
 
 let items =
-  [ item ~id:"a1" ~at:(time "2026-09-03 10:00:00Z") ~amount:"-40.00" (card ~category:"groceries" "Green Grocer")
+  [ item
+      ~id:"a1"
+      ~at:(time "2026-09-03 10:00:00Z")
+      ~amount:"-40.00"
+      (card ~category:"groceries" "Green Grocer")
   ; item ~id:"a2" ~at:(time "2026-09-20 10:00:00Z") ~amount:"-10.00" (card "Corner Cafe")
-  ; item ~id:"b1" ~at:(time "2026-10-01 00:00:00Z") ~amount:"-60.00" (card ~category:"groceries" "Green Grocer")
+  ; item
+      ~id:"b1"
+      ~at:(time "2026-10-01 00:00:00Z")
+      ~amount:"-60.00"
+      (card ~category:"groceries" "Green Grocer")
   ; item ~id:"b2" ~at:(time "2026-10-02 08:00:00Z") ~amount:"-4.50" (card "Corner Cafe")
   ; item ~id:"b3" ~at:(time "2026-10-03 08:00:00Z") ~amount:"-5.50" (card "CORNER CAFE")
-  ; item ~id:"b4" ~at:(time "2026-10-05 12:00:00Z") ~amount:"-900.00" ~description:"Rent October" (payment "Landlord")
-  ; item ~id:"b5" ~at:(time "2026-10-06 12:00:00Z") ~amount:"20.00" ~refund_of:"b1" (card "Green Grocer")
-  ; item ~id:"b6" ~at:(time "2026-10-07 12:00:00Z") ~amount:"2500.00" (Incoming { payer = Some "Employer" })
+  ; item
+      ~id:"b4"
+      ~at:(time "2026-10-05 12:00:00Z")
+      ~amount:"-900.00"
+      ~description:"Rent October"
+      (payment "Landlord")
+  ; item
+      ~id:"b5"
+      ~at:(time "2026-10-06 12:00:00Z")
+      ~amount:"20.00"
+      ~refund_of:"b1"
+      (card "Green Grocer")
+  ; item
+      ~id:"b6"
+      ~at:(time "2026-10-07 12:00:00Z")
+      ~amount:"2500.00"
+      (Incoming { payer = Some "Employer" })
   ; item ~id:"b7" ~at:(time "2026-10-08 12:00:00Z") ~amount:"-100.00" Internal
-  ; item ~id:"b8" ~at:(time "2026-10-09 12:00:00Z") ~amount:"-99.00" ~status:Pending (card "Shop")
+  ; item
+      ~id:"b8"
+      ~at:(time "2026-10-09 12:00:00Z")
+      ~amount:"-99.00"
+      ~status:Pending
+      (card "Shop")
   ; item ~id:"b9" ~at:(time "2026-10-31 23:59:59Z") ~amount:"-1.00" (card "Corner Cafe")
   ; item ~id:"c1" ~at:(time "2026-11-01 00:00:00Z") ~amount:"-7.00" (card "Corner Cafe")
   ]
@@ -33,7 +60,8 @@ let%expect_test "a month's summary" =
       items
   in
   print_s [%sexp (s : Insights.t)];
-  [%expect {|
+  [%expect
+    {|
     ((account customer:1/eur) (currency EUR) (month 2026-10)
      (spending "951.00 EUR") (previous_spending "50.00 EUR")
      (categories
@@ -59,7 +87,12 @@ let%expect_test "a month's summary" =
 
 let%expect_test "spent per category for budgets, and the months with data" =
   let by_category, total =
-    Insights.spent ctx ~account ~currency:Money.Currency.eur ~month:(month "2026-10") items
+    Insights.spent
+      ctx
+      ~account
+      ~currency:Money.Currency.eur
+      ~month:(month "2026-10")
+      items
   in
   print_s [%sexp (by_category : Money.Amount.t Category.Map.t), (total : Money.Amount.t)];
   print_s
@@ -77,7 +110,8 @@ let%expect_test "spent per category for budgets, and the months with data" =
          items
        |> List.map ~f:(fun ((i : Item.t), _) -> i.id)
        : Item_id.t list)];
-  [%expect {|
+  [%expect
+    {|
     (((bills "900.00 EUR") (eating_out "11.00 EUR") (groceries "40.00 EUR"))
      "951.00 EUR")
     (2026-09 2026-10 2026-11)
@@ -92,7 +126,9 @@ let%test_unit "category totals add up" =
   let gen_item i =
     let%bind cents = Int.gen_incl (-50_000) 50_000 in
     let%bind day = Int.gen_incl 1 28 in
-    let%bind merchant = Quickcheck.Generator.of_list [ "Cafe"; "Rent Co"; "Shop"; "Hotel" ] in
+    let%bind merchant =
+      Quickcheck.Generator.of_list [ "Cafe"; "Rent Co"; "Shop"; "Hotel" ]
+    in
     let%map source =
       Quickcheck.Generator.of_list [ card merchant; payment merchant; Internal; Other ]
     in
@@ -101,7 +137,9 @@ let%test_unit "category totals add up" =
       ~at:(time (sprintf "2026-10-%02d 12:00:00Z" day))
       ~amount:
         (Money.Amount.to_decimal_string
-           (Money.Amount.of_minor_units_int Money.Currency.eur (if cents = 0 then 1 else cents)))
+           (Money.Amount.of_minor_units_int
+              Money.Currency.eur
+              (if cents = 0 then 1 else cents)))
       source
   in
   let gen =
@@ -110,7 +148,12 @@ let%test_unit "category totals add up" =
   in
   Quickcheck.test gen ~f:(fun items ->
     let s =
-      Insights.summarise ctx ~account ~currency:Money.Currency.eur ~month:(month "2026-10") items
+      Insights.summarise
+        ctx
+        ~account
+        ~currency:Money.Currency.eur
+        ~month:(month "2026-10")
+        items
     in
     let sum l = Money.Amount.sum Money.Currency.eur l |> Or_error.ok_exn in
     [%test_result: Money.Amount.t]

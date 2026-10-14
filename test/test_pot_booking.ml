@@ -18,7 +18,9 @@ let show_entry r =
 let%expect_test "deposit, withdraw and their refusals" =
   let p = pot () in
   let b = ledger ~deposit:(eur "100.00") ~pots:[ p ] () in
-  let d = Pot_booking.deposit b p ~amount:(eur "60.00") ~idempotency_key:(key "r1") ~at:t0 in
+  let d =
+    Pot_booking.deposit b p ~amount:(eur "60.00") ~idempotency_key:(key "r1") ~at:t0
+  in
   show_entry d;
   let b = post b (Result.ok d |> Option.value_exn) in
   print_s [%sexp (available b : string), (Pot_booking.balance b p : Money.Amount.t)];
@@ -49,7 +51,8 @@ let%expect_test "deposit, withdraw and their refusals" =
     (Amount_not_positive)
     ((Amount_currency_mismatch (expected EUR)))
     |}];
-  show_entry (Pot_booking.withdraw b p ~amount:(eur "60.00") ~idempotency_key:(key "r6") ~at:t0);
+  show_entry
+    (Pot_booking.withdraw b p ~amount:(eur "60.00") ~idempotency_key:(key "r6") ~at:t0);
   [%expect
     {|
     (Ok
@@ -73,7 +76,9 @@ let%expect_test "a retried deposit replays, even after the money moved" =
   let retry =
     Pot_booking.deposit b p ~amount:(eur "100.00") ~idempotency_key:(key "r1") ~at:later
   in
-  print_s [%sexp (Result.map retry ~f:(Ledger.Entry.equal first) : (bool, Pot.Refusal.t) Result.t)];
+  print_s
+    [%sexp
+      (Result.map retry ~f:(Ledger.Entry.equal first) : (bool, Pot.Refusal.t) Result.t)];
   let other =
     Pot_booking.deposit b p ~amount:(eur "1.00") ~idempotency_key:(key "r1") ~at:later
   in
@@ -99,7 +104,9 @@ let%expect_test "closing returns the balance in one entry and closes the account
   let closing = Pot_booking.close b p ~at:t0 |> Result.ok |> Option.value_exn in
   print_s
     [%sexp
-      { entry = (Option.map closing.entry ~f:(fun e -> e.idempotency_key, e.postings) : (Ledger.Idempotency_key.t * Ledger.Posting.t list) option)
+      { entry =
+          (Option.map closing.entry ~f:(fun e -> e.idempotency_key, e.postings)
+           : (Ledger.Idempotency_key.t * Ledger.Posting.t list) option)
       ; returned = (closing.returned : Money.Amount.t)
       ; status = (closing.pot.status : Pot.Status.t)
       }];
@@ -109,10 +116,17 @@ let%expect_test "closing returns the balance in one entry and closes the account
     [%sexp
       (available b : string)
       , (Ledger.Balances.status b p.ledger_account : Ledger.Account_status.t)];
-  print_s [%sexp (Pot_booking.close b closing.pot ~at:t0 |> Result.error : Pot.Refusal.t option)];
   print_s
     [%sexp
-      (Pot_booking.deposit b closing.pot ~amount:(eur "1.00") ~idempotency_key:(key "r9") ~at:t0
+      (Pot_booking.close b closing.pot ~at:t0 |> Result.error : Pot.Refusal.t option)];
+  print_s
+    [%sexp
+      (Pot_booking.deposit
+         b
+         closing.pot
+         ~amount:(eur "1.00")
+         ~idempotency_key:(key "r9")
+         ~at:t0
        |> Result.error
        : Pot.Refusal.t option)];
   [%expect
@@ -132,12 +146,13 @@ let%expect_test "closing an empty pot books nothing" =
   let p = pot () in
   let b = ledger ~pots:[ p ] () in
   let closing = Pot_booking.close b p ~at:t0 |> Result.ok |> Option.value_exn in
-  print_s [%sexp (Option.is_none closing.entry : bool), (closing.returned : Money.Amount.t)];
+  print_s
+    [%sexp (Option.is_none closing.entry : bool), (closing.returned : Money.Amount.t)];
   [%expect {| (true "0.00 EUR") |}]
 ;;
 
-(* Random deposits and withdrawals, some of them retried: money is never created, the
-   pot never goes below zero and its movements add up to its balance. *)
+(* Random deposits and withdrawals, some of them retried: money is never created, the pot
+   never goes below zero and its movements add up to its balance. *)
 let%test_unit "pot movements conserve money" =
   let open Quickcheck.Generator.Let_syntax in
   let op =
@@ -151,21 +166,24 @@ let%test_unit "pot movements conserve money" =
     let start = eur "1000.00" in
     let b = ledger ~deposit:start ~pots:[ p ] () in
     let b, entries, _ =
-      List.foldi ops ~init:(b, [], []) ~f:(fun i (b, entries, keys) (deposit, cents, retry) ->
-        (* [retry = 0] reuses an earlier key with this request's amount. *)
-        let k =
-          match keys with
-          | k :: _ when retry = 0 -> k
-          | _ -> key (sprintf "r%d" i)
-        in
-        let amount = Money.Amount.of_minor_units_int Money.Currency.eur cents in
-        let book = if deposit then Pot_booking.deposit else Pot_booking.withdraw in
-        match book b p ~amount ~idempotency_key:k ~at:t0 with
-        | Error _ -> b, entries, k :: keys
-        | Ok e ->
-          (match Ledger.Balances.find_entry b e.idempotency_key with
-           | Some _ -> b, entries, k :: keys
-           | None -> post b e, e :: entries, k :: keys))
+      List.foldi
+        ops
+        ~init:(b, [], [])
+        ~f:(fun i (b, entries, keys) (deposit, cents, retry) ->
+          (* [retry = 0] reuses an earlier key with this request's amount. *)
+          let k =
+            match keys with
+            | k :: _ when retry = 0 -> k
+            | _ -> key (sprintf "r%d" i)
+          in
+          let amount = Money.Amount.of_minor_units_int Money.Currency.eur cents in
+          let book = if deposit then Pot_booking.deposit else Pot_booking.withdraw in
+          match book b p ~amount ~idempotency_key:k ~at:t0 with
+          | Error _ -> b, entries, k :: keys
+          | Ok e ->
+            (match Ledger.Balances.find_entry b e.idempotency_key with
+             | Some _ -> b, entries, k :: keys
+             | None -> post b e, e :: entries, k :: keys))
     in
     let pot_balance = Pot_booking.balance b p in
     assert (not (Money.Amount.is_negative pot_balance));

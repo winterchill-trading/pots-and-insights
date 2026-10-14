@@ -58,12 +58,12 @@ let%expect_test "parsing" =
 
 let%test_unit "every instant of a month maps back to it" =
   Quickcheck.test
-    (Quickcheck.Generator.both M.quickcheck_generator (Int.gen_incl 0 (31 * 86_400 - 1)))
+    (Quickcheck.Generator.both
+       M.quickcheck_generator
+       (Int.gen_incl 0 ((31 * 86_400) - 1)))
     ~f:(fun (t, seconds) ->
       let time = Time_ns.add (M.start t) (Time_ns.Span.of_int_sec seconds) in
-      [%test_result: bool]
-        (M.contains t time)
-        ~expect:(Time_ns.( < ) time (M.stop t));
+      [%test_result: bool] (M.contains t time) ~expect:(Time_ns.( < ) time (M.stop t));
       if M.contains t time then [%test_result: M.t] (M.of_time time) ~expect:t)
 ;;
 

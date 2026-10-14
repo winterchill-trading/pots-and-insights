@@ -2,12 +2,15 @@ open! Core
 open Pots_and_insights
 
 let%expect_test "rounding half away from zero" =
-  List.iter [ 1, 3; 2, 3; 1, 2000; 1, 1999; -1, 2000; 5, 4; 0, 7; 1, 0 ] ~f:(fun (n, d) ->
-    print_s
-      [%sexp
-        (n : int)
-        , (d : int)
-        , (Percentage.of_ratio ~num:(Z.of_int n) ~den:(Z.of_int d) : Percentage.t Or_error.t)]);
+  List.iter
+    [ 1, 3; 2, 3; 1, 2000; 1, 1999; -1, 2000; 5, 4; 0, 7; 1, 0 ]
+    ~f:(fun (n, d) ->
+      print_s
+        [%sexp
+          (n : int)
+          , (d : int)
+          , (Percentage.of_ratio ~num:(Z.of_int n) ~den:(Z.of_int d)
+             : Percentage.t Or_error.t)]);
   [%expect
     {|
     (1 3 (Ok 33.3))
