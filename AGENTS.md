@@ -54,7 +54,7 @@ Standalone: `opam repo add winterchill https://github.com/winterchill-trading/op
   checked against the `Ledger.Balances.t` passed in; scheduled work is a
   `Scheduler_core.Job.S` functor over any monad.
 - odoc on every public value (CI fails on odoc warnings); comments for humans at
-  non-obvious choices; user-visible changes get a line under "Unreleased" in `CHANGES.md`.
+  non-obvious choices; user-visible changes get a line under the next version in `CHANGES.md`.
 - New modules must be re-exported from `lib/pots_and_insights.ml`.
 
 ## Dependencies and dependents
@@ -88,6 +88,10 @@ most one `gh run watch <id> --exit-status`; never poll in a loop.
 - A ledger idempotency key must be booked once: `Pot_booking` checks for an existing
   entry before checking balances, so a retried deposit replays instead of failing on
   funds that already moved.
+- Changes after 0.1.0 are additive: new behaviour goes behind an optional argument or a
+  new function. An optional argument on a function whose arguments are all labelled can
+  never be erased (warning 16, and every existing call becomes a partial application),
+  so `Percentage.of_ratio` stayed as it was and `of_ratio_rounded` was added beside it.
 - Another agent's half-written sibling repository can print errors in the shared build
   output; filter for `pots-and-insights` paths before treating a build as failed.
 
