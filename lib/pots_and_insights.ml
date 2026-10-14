@@ -20,3 +20,6 @@ module Calendar_month = Calendar_month
 
 (** Checks and match keys for short user-typed text. *)
 module Text = Text
+
+(** Savings pots: owned sub-accounts with a goal and cosmetic fields. *)
+module Pot = Pot
