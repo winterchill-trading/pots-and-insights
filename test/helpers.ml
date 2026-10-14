@@ -66,3 +66,35 @@ let available b =
 ;;
 
 let refusal r = Pot.Refusal.sexp_of_t r
+
+let cat = Category.of_string
+
+(** A completed item on the customer's account; [amount] is signed. *)
+let item
+  ?(id = "i1")
+  ?(at = t0)
+  ?(description = "")
+  ?refund_of
+  ?(status = Item.Status.Completed)
+  ~amount
+  source
+  : Item.t
+  =
+  { id = Item_id.of_string id
+  ; account
+  ; amount = eur amount
+  ; at
+  ; description
+  ; source
+  ; refund_of = Option.map refund_of ~f:Item_id.of_string
+  ; status
+  }
+;;
+
+let card ?category merchant : Item.Source.t =
+  Card { merchant; merchant_category = Option.map category ~f:cat }
+;;
+
+let payment ?payee_id ?schedule name : Item.Source.t =
+  Payment { payee = Some { id = payee_id; name }; schedule }
+;;
