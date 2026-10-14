@@ -48,6 +48,7 @@ val withdraw
   -> at:Time_ns.t
   -> (Ledger.Entry.t, Pot.Refusal.t) Result.t
 
+(** What closing a pot books. *)
 module Closing : sig
   type t =
     { entry : Ledger.Entry.t option (** [None] for an empty pot *)
@@ -73,6 +74,7 @@ val balance : Ledger.Balances.t -> Pot.t -> Money.Amount.t
 
 (** One money movement as the pot's owner sees it. *)
 module Movement : sig
+  (** Which operation made the movement. *)
   module Kind : sig
     type t =
       | Deposit

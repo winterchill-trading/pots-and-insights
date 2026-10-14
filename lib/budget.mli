@@ -16,6 +16,7 @@
 
 open! Core
 
+(** What a budget limits. *)
 module Target : sig
   type t =
     | Overall
@@ -32,6 +33,7 @@ module Target : sig
   end
 end
 
+(** Bounds a bank sets on budgets. *)
 module Limits : sig
   type t =
     { max_amount : Z.t (** minor units; default 10^12 *)
@@ -39,9 +41,11 @@ module Limits : sig
     }
   [@@deriving sexp_of]
 
+  (** Amounts up to 10^12 minor units, near from 80 %. *)
   val default : t
 end
 
+(** Why a budget change was refused, for the caller to map onto its own error codes. *)
 module Refusal : sig
   type t =
     | Unknown_category (** not a spending category of the catalogue *)
@@ -102,6 +106,7 @@ val amount_for : t -> Calendar_month.t -> Money.Amount.t option
 (** Whether the budget has an amount in a month or any later one. *)
 val in_force_from : t -> Calendar_month.t -> bool
 
+(** Where spending stands against the amount. *)
 module Status : sig
   type t =
     | Under
@@ -113,7 +118,9 @@ module Status : sig
   val name : t -> string
 end
 
+(** Spending against the even share of the month elapsed. *)
 module Pace : sig
+  (** [Ahead] when more was spent than the even share. *)
   module Status : sig
     type t =
       | On_track
@@ -146,6 +153,7 @@ val pace
   -> now:Time_ns.t
   -> Pace.t option
 
+(** One budget in one month. *)
 module Progress : sig
   type t =
     { budget : Budget_id.t

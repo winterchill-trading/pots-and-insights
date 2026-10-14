@@ -13,7 +13,9 @@ include Comparable.S with type t := t
 (** Fails unless [1 <= year <= 9999]. *)
 val create : year:int -> month:Month.t -> t Or_error.t
 
+(** The year, 1 to 9999. *)
 val year : t -> int
+(** The month of the year. *)
 val month : t -> Month.t
 
 (** The month a date falls in. *)
@@ -43,7 +45,9 @@ val contains : t -> Time_ns.t -> bool
 (** [add t n] is [n] months later ([n] may be negative). *)
 val add : t -> int -> t
 
+(** The month after. *)
 val next : t -> t
+(** The month before. *)
 val prev : t -> t
 
 (** [months_between a b] is the number of months from [a] to [b]: [1] from 2026-01 to
@@ -63,8 +67,11 @@ val to_string : t -> string
 (** Parses ["YYYY-MM"] (exactly four and two digits). *)
 val of_string : string -> t Or_error.t
 
+(** Months from 1970 to 2100. *)
 val quickcheck_generator : t Quickcheck.Generator.t
+(** Observes the month number. *)
 val quickcheck_observer : t Quickcheck.Observer.t
+(** Does not shrink. *)
 val quickcheck_shrinker : t Quickcheck.Shrinker.t
 
 module Stable : sig

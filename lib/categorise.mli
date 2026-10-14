@@ -16,6 +16,7 @@
 
 open! Core
 
+(** Which rule decided an item's category. *)
 module Source : sig
   type t =
     | Override
@@ -38,6 +39,7 @@ module Source : sig
   val is_user : t -> bool
 end
 
+(** The category of an item and how it was decided. *)
 module Assignment : sig
   type t =
     { category : Category.t
@@ -81,6 +83,7 @@ module Refusal : sig
   val code : t -> string
 end
 
+(** How far a recategorisation reaches. *)
 module Scope : sig
   type t =
     | One (** this item only *)

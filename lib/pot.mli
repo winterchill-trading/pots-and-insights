@@ -15,6 +15,7 @@
 
 open! Core
 
+(** Bounds a bank sets on pots. *)
 module Limits : sig
   type t =
     { max_open_pots : int (** per owner; default 20 *)
@@ -24,6 +25,7 @@ module Limits : sig
     }
   [@@deriving sexp, compare, equal]
 
+  (** 20 open pots, names of 30 code points, 8 cosmetic fields of 16 bytes. *)
   val default : t
 end
 
@@ -57,6 +59,7 @@ module Refusal : sig
   val code : t -> string
 end
 
+(** Whether the pot is open. *)
 module Status : sig
   type t =
     | Active
@@ -116,6 +119,7 @@ val update : ?limits:Limits.t -> t -> today:Date.t -> Details.t -> (t, Refusal.t
 (** Marks the pot closed. The caller books {!Pot_booking.close} first. *)
 val close : t -> at:Time_ns.t -> (t, Refusal.t) Result.t
 
+(** Whether the pot is not closed. *)
 val is_active : t -> bool
 
 (** The ledger account to open for a pot: a credit-normal [Liability] with purpose

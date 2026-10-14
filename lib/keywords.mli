@@ -12,6 +12,7 @@ type t [@@deriving sexp_of]
 (** Fails on a keyword whose match key is empty. *)
 val create : (string * Category.t) list -> t Or_error.t
 
+(** No keywords: nothing matches. *)
 val empty : t
 
 (** A short general list over {!Catalogue.default}: utility, rent and insurance words for
@@ -22,4 +23,5 @@ val default : t
     list. *)
 val find : t -> string -> (string * Category.t) option
 
+(** The entries, in order. *)
 val to_list : t -> (string * Category.t) list

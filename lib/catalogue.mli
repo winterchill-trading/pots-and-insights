@@ -8,6 +8,7 @@
 
 open! Core
 
+(** How the items of a category count. *)
 module Group : sig
   type t =
     | Spending
@@ -37,9 +38,15 @@ val default : t
 (** In picker order. *)
 val categories : t -> (Category.t * Group.t) list
 
+(** The group of a category; [None] when the catalogue does not have it. *)
 val group : t -> Category.t -> Group.t option
+(** Whether the category is a [Spending] one of this catalogue. *)
 val is_spending : t -> Category.t -> bool
+(** The spending categories, in picker order. *)
 val spending : t -> Category.t list
+(** The spending category of an item nothing else classifies. *)
 val default_category : t -> Category.t
+(** The category of money coming in. *)
 val income : t -> Category.t
+(** The category of movements between the owner's own accounts. *)
 val internal : t -> Category.t

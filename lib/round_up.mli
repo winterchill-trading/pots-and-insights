@@ -18,6 +18,7 @@ type t = private
   }
 [@@deriving sexp, compare, equal]
 
+(** Fails unless [unit] is positive and [multiplier] (default 1) is in 1..10. *)
 val create
   :  pot:Pot_id.t
   -> unit:Money.Amount.t
@@ -33,7 +34,8 @@ val of_spend : t -> spend:Money.Amount.t -> Money.Amount.t Or_error.t
     even when it rounds up by zero. *)
 val of_item : t -> Item.t -> Money.Amount.t option
 
-(** The round-ups of the account's items in [[from, until)], summed. *)
+(** The round-ups of the account's items from [from] (inclusive) to [until] (exclusive),
+    summed. *)
 val total
   :  t
   -> account:Ledger.Account_id.t

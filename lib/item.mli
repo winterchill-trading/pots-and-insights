@@ -6,6 +6,7 @@
 
 open! Core
 
+(** Whether the item is final. *)
 module Status : sig
   type t =
     | Pending (** still on hold; insights skip it *)
@@ -22,6 +23,7 @@ module Payee : sig
   [@@deriving sexp, compare, equal]
 end
 
+(** Where the item comes from. *)
 module Source : sig
   type t =
     | Card of

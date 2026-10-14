@@ -18,5 +18,6 @@ end
 
 (** A fresh id type; [module_name] appears in error messages. *)
 module Make (_ : sig
+    (** Used in error messages, e.g. ["Pots_and_insights.Pot_id"]. *)
     val module_name : string
   end) : S

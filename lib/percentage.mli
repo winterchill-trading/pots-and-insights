@@ -15,6 +15,7 @@ val of_ratio : num:Z.t -> den:Z.t -> t Or_error.t
 (** [of_tenths 123] is 12.3 %. *)
 val of_tenths : int -> t
 
+(** The count of tenths: [123] for 12.3 %. *)
 val to_tenths : t -> int
 
 (** ["12.3"], ["-0.5"], ["100.0"]. *)

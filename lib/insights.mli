@@ -20,6 +20,7 @@ module Context : sig
   val default : t
 end
 
+(** Spending in one category. *)
 module Category_total : sig
   type t =
     { category : Category.t
@@ -33,6 +34,7 @@ module Category_total : sig
   [@@deriving sexp_of, compare, equal]
 end
 
+(** Spending at one card merchant, merchants told apart by {!Text.match_key}. *)
 module Merchant_total : sig
   type t =
     { name : string (** as on the latest item *)
@@ -43,6 +45,7 @@ module Merchant_total : sig
   [@@deriving sexp_of, compare, equal]
 end
 
+(** Money in and out in one month. *)
 module Flow_month : sig
   type t =
     { month : Calendar_month.t

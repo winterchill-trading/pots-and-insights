@@ -26,24 +26,35 @@ end
 
 type t [@@deriving sexp, compare, equal]
 
+(** No choices: every item is filed automatically. *)
 val empty : t
+(** The category the owner chose for this one item. *)
 val override : t -> Item_id.t -> Category.t option
+(** The category the owner chose for every item from this merchant. *)
 val merchant_rule : t -> merchant:string -> Category.t option
+(** The category the owner chose for every payment to this payee. *)
 val payee_rule : t -> Item.Payee.t -> Category.t option
+(** The category the owner chose for a standing order. *)
 val schedule_category : t -> schedule:string -> Category.t option
 
-(** [None] removes. *)
+(** Sets or, with [None], removes an override. *)
 val set_override : t -> Item_id.t -> Category.t option -> t
 
+(** Sets or, with [None], removes a merchant rule. *)
 val set_merchant_rule : t -> merchant:string -> Category.t option -> t
+(** Sets or, with [None], removes a payee rule. *)
 val set_payee_rule : t -> Payee_key.t -> Category.t option -> t
+(** Sets or, with [None], removes a standing order's category. *)
 val set_schedule_category : t -> schedule:string -> Category.t option -> t
 
 (** Every entry, for storage or display. *)
 val overrides : t -> (Item_id.t * Category.t) list
 
+(** Merchant rules by match key. *)
 val merchant_rules : t -> (string * Category.t) list
+(** Payee rules. *)
 val payee_rules : t -> (Payee_key.t * Category.t) list
+(** Standing order categories by schedule id. *)
 val schedule_categories : t -> (string * Category.t) list
 
 module Stable : sig

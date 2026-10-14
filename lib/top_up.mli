@@ -11,8 +11,10 @@ type t = private
   }
 [@@deriving sexp, compare, equal]
 
+(** Fails unless [amount] is positive. *)
 val create : pot:Pot_id.t -> amount:Money.Amount.t -> stop_at_goal:bool -> t Or_error.t
 
+(** What a top-up does on one date. *)
 module Decision : sig
   type t =
     | Deposit of Money.Amount.t

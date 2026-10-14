@@ -35,7 +35,7 @@ module type Env = sig
   (** The ledger state to check a movement against. *)
   val balances : unit -> Ledger.Balances.t io
 
-  (** The account's statement items in [[from, until)]. *)
+  (** The account's statement items from [from] (inclusive) to [until] (exclusive). *)
   val items
     :  account:Ledger.Account_id.t
     -> from:Time_ns.t

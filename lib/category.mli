@@ -10,9 +10,13 @@ type t [@@deriving sexp, compare, equal, hash]
 
 include Identifiable.S with type t := t
 
+(** Fails on anything but a slug of 1 to 40 characters from [a-z 0-9 _]. *)
 val of_string_or_error : string -> t Or_error.t
+(** Codes of the default catalogue's common categories. *)
 val quickcheck_generator : t Quickcheck.Generator.t
+(** Observes the code. *)
 val quickcheck_observer : t Quickcheck.Observer.t
+(** Does not shrink. *)
 val quickcheck_shrinker : t Quickcheck.Shrinker.t
 
 module Stable : sig
