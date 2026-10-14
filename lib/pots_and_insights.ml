@@ -17,3 +17,6 @@ module Item_id = Item_id
 
 (** Calendar months in UTC. *)
 module Calendar_month = Calendar_month
+
+(** Checks and match keys for short user-typed text. *)
+module Text = Text
