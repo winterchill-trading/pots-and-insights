@@ -50,3 +50,6 @@ module Percentage = Percentage
 
 (** Monthly spending summaries per currency account. *)
 module Insights = Insights
+
+(** Monthly budgets per currency account, category or overall. *)
+module Budget = Budget
