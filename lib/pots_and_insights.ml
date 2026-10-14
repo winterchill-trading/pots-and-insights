@@ -65,3 +65,6 @@ module Round_up = Round_up
 
 (** Scheduled top-ups of a pot. *)
 module Top_up = Top_up
+
+(** Top-ups and round-up sweeps as scheduler-core jobs. *)
+module Pot_job = Pot_job
