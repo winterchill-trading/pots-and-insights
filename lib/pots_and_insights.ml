@@ -53,3 +53,9 @@ module Insights = Insights
 
 (** Monthly budgets per currency account, category or overall. *)
 module Budget = Budget
+
+(** All budgets of an account in a month. *)
+module Budget_month = Budget_month
+
+(** Notices (budget near or over, goal reached) as values. *)
+module Notice = Notice
