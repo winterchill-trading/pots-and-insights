@@ -14,14 +14,19 @@ let code_points s =
     Some (loop 0 0))
 ;;
 
-let clean s ~max_code_points =
+let clean ?max_bytes s ~max_code_points =
   let s = String.strip s in
+  let over_bytes =
+    match max_bytes with
+    | None -> false
+    | Some max -> String.length s > max
+  in
   if String.is_empty s
   then Error "empty"
   else (
     match code_points s with
     | None -> Error "not_utf8"
-    | Some n when n > max_code_points -> Error "too_long"
+    | Some n when n > max_code_points || over_bytes -> Error "too_long"
     | Some _ ->
       (* Bytes below 0x20 and DEL are never part of a multi-byte UTF-8 sequence. *)
       if String.exists s ~f:(fun c -> Char.to_int c < 0x20 || Char.to_int c = 0x7f)
