@@ -20,8 +20,8 @@ module T = struct
          let w = Int.of_string (if negative then String.drop_prefix whole 1 else whole) in
          let v = (w * 10) + Int.of_string frac in
          if negative then -v else v
-       | _ -> of_sexp_error "Percent.t_of_sexp: expected a number with one decimal" sexp)
-    | List _ -> of_sexp_error "Percent.t_of_sexp: expected an atom" sexp
+       | _ -> of_sexp_error "Percentage.t_of_sexp: expected a number with one decimal" sexp)
+    | List _ -> of_sexp_error "Percentage.t_of_sexp: expected an atom" sexp
   ;;
 end
 
@@ -32,7 +32,7 @@ let to_tenths t = t
 
 let of_ratio ~num ~den =
   if Z.equal den Z.zero
-  then Or_error.error_string "Percent.of_ratio: zero denominator"
+  then Or_error.error_string "Percentage.of_ratio: zero denominator"
   else (
     (* tenths = num * 1000 / den, rounded half away from zero, on exact integers. *)
     let n = Z.mul num (Z.of_int 1000) in
@@ -41,7 +41,7 @@ let of_ratio ~num ~den =
     let q = if negative then Z.neg q else q in
     if Z.fits_int q
     then Ok (Z.to_int q)
-    else Or_error.error_string "Percent.of_ratio: out of range")
+    else Or_error.error_string "Percentage.of_ratio: out of range")
 ;;
 
 include Comparable.Make (T)
