@@ -19,13 +19,16 @@ open! Core
 module Limits : sig
   type t =
     { max_open_pots : int (** per owner; default 20 *)
-    ; max_name_length : int (** code points after trimming; default 30 *)
+    ; max_name_length : int
+    (** Unicode code points after trimming, not user-perceived characters (see
+        {!Text.clean}); default 30. Pass [max_name_bytes] to {!create} and {!update} to
+        also cap the UTF-8 byte length. *)
     ; max_cosmetic_fields : int (** default 8 *)
-    ; max_cosmetic_length : int (** bytes per cosmetic value; default 16 *)
+    ; max_cosmetic_length : int (** code points per cosmetic value; default 16 *)
     }
   [@@deriving sexp, compare, equal]
 
-  (** 20 open pots, names of 30 code points, 8 cosmetic fields of 16 bytes. *)
+  (** 20 open pots, names of 30 code points, 8 cosmetic fields of 16 code points. *)
   val default : t
 end
 
@@ -99,10 +102,18 @@ type t = private
 (** [pot:<id>], the id of the pot's ledger account. *)
 val ledger_account_id : Pot_id.t -> Ledger.Account_id.t
 
-(** A new active pot. [open_pots] is the number of the owner's pots that are not closed; a
-    target date before [today] is refused. *)
+(** A new active pot. [open_pots] is the number of the owner's pots that are not closed.
+
+    A name longer than [max_name_bytes] UTF-8 bytes after trimming is refused as
+    [Name_invalid "too_long"]; there is no byte cap by default.
+
+    A target date before [today] is refused unless [allow_past_target_date] is [true]
+    (default [false]); set it when importing pots from another system, whose dates may
+    have passed already. *)
 val create
   :  ?limits:Limits.t
+  -> ?max_name_bytes:int
+  -> ?allow_past_target_date:bool
   -> id:Pot_id.t
   -> owner:Owner_id.t
   -> account:Ledger.Account_id.t
@@ -113,8 +124,16 @@ val create
   -> Details.t
   -> (t, Refusal.t) Result.t
 
-(** Replaces the editable fields of an active pot, with the same checks as {!create}. *)
-val update : ?limits:Limits.t -> t -> today:Date.t -> Details.t -> (t, Refusal.t) Result.t
+(** Replaces the editable fields of an active pot, with the same checks and options as
+    {!create}. *)
+val update
+  :  ?limits:Limits.t
+  -> ?max_name_bytes:int
+  -> ?allow_past_target_date:bool
+  -> t
+  -> today:Date.t
+  -> Details.t
+  -> (t, Refusal.t) Result.t
 
 (** Marks the pot closed. The caller books {!Pot_booking.close} first. *)
 val close : t -> at:Time_ns.t -> (t, Refusal.t) Result.t

@@ -144,10 +144,17 @@ let check_cosmetics (limits : Limits.t) cosmetics =
   |> Result.map ~f:List.rev
 ;;
 
-let check_details (limits : Limits.t) ~currency ~today (d : Details.t) =
+let check_details
+  ?max_name_bytes
+  ?(allow_past_target_date = false)
+  (limits : Limits.t)
+  ~currency
+  ~today
+  (d : Details.t)
+  =
   let open Result.Let_syntax in
   let%bind name =
-    Text.clean d.name ~max_code_points:limits.max_name_length
+    Text.clean ?max_bytes:max_name_bytes d.name ~max_code_points:limits.max_name_length
     |> Result.map_error ~f:(fun reason -> Refusal.Name_invalid reason)
   in
   let%bind () =
@@ -162,7 +169,8 @@ let check_details (limits : Limits.t) ~currency ~today (d : Details.t) =
   in
   let%bind () =
     match d.target_date with
-    | Some date when Date.( < ) date today -> Error Refusal.Target_date_in_past
+    | Some date when Date.( < ) date today && not allow_past_target_date ->
+      Error Refusal.Target_date_in_past
     | _ -> Ok ()
   in
   let%map cosmetics = check_cosmetics limits d.cosmetics in
@@ -171,6 +179,8 @@ let check_details (limits : Limits.t) ~currency ~today (d : Details.t) =
 
 let create
   ?(limits = Limits.default)
+  ?max_name_bytes
+  ?allow_past_target_date
   ~id
   ~owner
   ~account
@@ -186,7 +196,9 @@ let create
     then Error (Refusal.Too_many_open_pots { max = limits.max_open_pots })
     else Ok ()
   in
-  let%map details = check_details limits ~currency ~today details in
+  let%map details =
+    check_details ?max_name_bytes ?allow_past_target_date limits ~currency ~today details
+  in
   { id
   ; owner
   ; account
@@ -204,10 +216,25 @@ let is_active t =
   | Closed _ -> false
 ;;
 
-let update ?(limits = Limits.default) t ~today details =
+let update
+  ?(limits = Limits.default)
+  ?max_name_bytes
+  ?allow_past_target_date
+  t
+  ~today
+  details
+  =
   let open Result.Let_syntax in
   let%bind () = if is_active t then Ok () else Error Refusal.Pot_closed in
-  let%map details = check_details limits ~currency:t.currency ~today details in
+  let%map details =
+    check_details
+      ?max_name_bytes
+      ?allow_past_target_date
+      limits
+      ~currency:t.currency
+      ~today
+      details
+  in
   { t with details }
 ;;
 
