@@ -1,0 +1,6 @@
+(library
+ (name pots_and_insights)
+ (public_name pots-and-insights)
+ (libraries core zarith money ledger scheduler-core)
+ (preprocess
+  (pps ppx_jane)))

@@ -1,0 +1,16 @@
+(library
+ (name pots_and_insights_test)
+ (package pots-and-insights)
+ (libraries
+  pots-and-insights
+  core
+  zarith
+  money
+  ledger
+  scheduler-core
+  expect_test_helpers_core)
+ (inline_tests
+  (flags
+   (:standard -source-tree-root .)))
+ (preprocess
+  (pps ppx_jane)))
