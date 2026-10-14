@@ -31,23 +31,46 @@ include T
 let of_tenths t = t
 let to_tenths t = t
 
-let of_ratio ~num ~den =
+module Rounding = struct
+  type t =
+    | Half_away_from_zero
+    | Half_even
+  [@@deriving sexp, compare, equal, enumerate]
+
+  let default = Half_away_from_zero
+end
+
+let of_ratio_rounded ~rounding ~num ~den =
   if Z.equal den Z.zero
   then Or_error.error_string "Percentage.of_ratio: zero denominator"
   else (
-    (* tenths = num * 1000 / den, rounded half away from zero, on exact integers. *)
-    let n = Z.mul num (Z.of_int 1000) in
-    let q =
-      Z.div
-        (Z.add (Z.mul (Z.abs n) (Z.of_int 2)) (Z.abs den))
-        (Z.mul (Z.abs den) (Z.of_int 2))
+    (* tenths = |num| * 1000 / |den| on exact integers, then the sign; [q] is the
+       truncated quotient and [r] the remainder, so the result is a half exactly when
+       [2r = |den|]. *)
+    let n = Z.abs (Z.mul num (Z.of_int 1000)) in
+    let d = Z.abs den in
+    let q, r = Z.div_rem n d in
+    let twice_r = Z.mul r (Z.of_int 2) in
+    let c = Z.compare twice_r d in
+    let round_up =
+      if c > 0
+      then true
+      else if c < 0
+      then false
+      else (
+        match (rounding : Rounding.t) with
+        | Half_away_from_zero -> true
+        | Half_even -> Z.is_odd q)
     in
-    let negative = Z.sign n * Z.sign den < 0 in
+    let q = if round_up then Z.succ q else q in
+    let negative = Z.sign num * Z.sign den < 0 in
     let q = if negative then Z.neg q else q in
     if Z.fits_int q
     then Ok (Z.to_int q)
     else Or_error.error_string "Percentage.of_ratio: out of range")
 ;;
+
+let of_ratio ~num ~den = of_ratio_rounded ~rounding:Rounding.default ~num ~den
 
 include Comparable.Make (T)
 
