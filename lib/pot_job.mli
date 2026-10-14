@@ -3,9 +3,8 @@
     Two kinds of job run on a schedule:
     - [Top_up]: on each date, move the top-up amount (see {!Top_up.decide}) into the pot;
     - [Round_up_sweep]: on each date, move the round-ups of the previous UTC day's card
-      purchases on [account] into the pot. Sweeps run daily
-      ([Every_n_days 1]); {!Make.validate} refuses other frequencies so no day is swept
-      twice or skipped.
+      purchases on [account] into the pot. Sweeps run daily ([Every_n_days 1]);
+      {!Make.validate} refuses other frequencies so no day is swept twice or skipped.
 
     The ledger key of each movement is {!idempotency_key} of the run key, so a run the
     scheduler retries after a crash replays the booked entry instead of moving money
@@ -37,10 +36,14 @@ module type Env = sig
   val balances : unit -> Ledger.Balances.t io
 
   (** The account's statement items in [[from, until)]. *)
-  val items : account:Ledger.Account_id.t -> from:Time_ns.t -> until:Time_ns.t -> Item.t list io
+  val items
+    :  account:Ledger.Account_id.t
+    -> from:Time_ns.t
+    -> until:Time_ns.t
+    -> Item.t list io
 
-  (** Appends an entry to the journal. An [Error] is taken as transient: the job raises
-      so the scheduler retries the date with the same key. *)
+  (** Appends an entry to the journal. An [Error] is taken as transient: the job raises so
+      the scheduler retries the date with the same key. *)
   val append : Ledger.Entry.t -> unit Or_error.t io
 end
 

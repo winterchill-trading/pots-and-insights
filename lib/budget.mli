@@ -9,10 +9,10 @@
     Progress compares what was spent in a month (see {!Insights.spent}) with the amount:
     - [Under] below the near threshold (80 % by default);
     - [Near] from the threshold up to the amount itself;
-    - [Over] above the amount.
-    For the month in progress, the pace is the even share of the month elapsed:
-    [expected = amount * day / days] rounded down, where [day] is today's day of the month
-    in UTC; spending above it is [Ahead] of pace, otherwise [On_track]. *)
+    - [Over] above the amount. For the month in progress, the pace is the even share of
+      the month elapsed: [expected = amount * day / days] rounded down, where [day] is
+      today's day of the month in UTC; spending above it is [Ahead] of pace, otherwise
+      [On_track]. *)
 
 open! Core
 
@@ -52,8 +52,8 @@ module Refusal : sig
     | Removed (** the budget no longer applies from that month *)
   [@@deriving sexp, compare, equal]
 
-  (** [unknown_category], [amount_not_positive], [amount_too_large],
-      [currency_mismatch], [budget_exists], [budget_removed]. *)
+  (** [unknown_category], [amount_not_positive], [amount_too_large], [currency_mismatch],
+      [budget_exists], [budget_removed]. *)
   val code : t -> string
 end
 
@@ -69,8 +69,9 @@ type t = private
   }
 [@@deriving sexp, compare, equal]
 
-(** A budget in force from [from], in the account's [currency]. [existing] are the owner's other budgets; one for the
-    same account and target that is in force in [from] or later refuses the new one. *)
+(** A budget in force from [from], in the account's [currency]. [existing] are the owner's
+    other budgets; one for the same account and target that is in force in [from] or later
+    refuses the new one. *)
 val create
   :  ?limits:Limits.t
   -> Catalogue.t
@@ -130,7 +131,12 @@ module Pace : sig
 end
 
 (** [status ~amount ~spent] with the threshold in percent (default 80). *)
-val status : ?near_percent:int -> amount:Money.Amount.t -> spent:Money.Amount.t -> unit -> Status.t
+val status
+  :  ?near_percent:int
+  -> amount:Money.Amount.t
+  -> spent:Money.Amount.t
+  -> unit
+  -> Status.t
 
 (** The pace of [spent] against [amount] at [now], when [now] falls in [month]. *)
 val pace

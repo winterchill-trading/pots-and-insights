@@ -11,7 +11,6 @@ type t [@@deriving sexp, compare, equal, hash]
 include Identifiable.S with type t := t
 
 val of_string_or_error : string -> t Or_error.t
-
 val quickcheck_generator : t Quickcheck.Generator.t
 val quickcheck_observer : t Quickcheck.Observer.t
 val quickcheck_shrinker : t Quickcheck.Shrinker.t

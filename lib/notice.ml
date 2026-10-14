@@ -33,9 +33,15 @@ include Stable.V1
 
 let key = function
   | Budget_near { budget; month; _ } ->
-    sprintf "budget:%s:%s:near" (Budget_id.to_string budget) (Calendar_month.to_string month)
+    sprintf
+      "budget:%s:%s:near"
+      (Budget_id.to_string budget)
+      (Calendar_month.to_string month)
   | Budget_over { budget; month; _ } ->
-    sprintf "budget:%s:%s:over" (Budget_id.to_string budget) (Calendar_month.to_string month)
+    sprintf
+      "budget:%s:%s:over"
+      (Budget_id.to_string budget)
+      (Calendar_month.to_string month)
   | Goal_reached { pot; _ } -> sprintf "pot:%s:goal_reached" (Pot_id.to_string pot)
 ;;
 
@@ -52,7 +58,9 @@ let budget_changes ~(before : Budget_month.t) ~(after : Budget_month.t) =
     |> Budget_id.Map.of_alist_reduce ~f:(fun a _ -> a)
   in
   List.filter_map (all after) ~f:(fun (p : Budget.Progress.t) ->
-    let was = Option.value (Map.find before_status p.budget) ~default:Budget.Status.Under in
+    let was =
+      Option.value (Map.find before_status p.budget) ~default:Budget.Status.Under
+    in
     if rank p.status <= rank was
     then None
     else (

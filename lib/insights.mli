@@ -64,7 +64,8 @@ type t =
       by catalogue order *)
   ; money_in : Money.Amount.t
   ; money_out : Money.Amount.t
-  ; flow : Flow_month.t list (** the [flow_months] months ending with [month], oldest first *)
+  ; flow : Flow_month.t list
+  (** the [flow_months] months ending with [month], oldest first *)
   ; top_merchants : Merchant_total.t list
   (** card merchants by total spent, largest first, at most [top_merchants] *)
   }

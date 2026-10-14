@@ -1,6 +1,6 @@
-(** Things worth telling the owner, as values: the caller decides how to render, store
-    and deliver them. Each notice has a {!key} so a caller that records the keys it sent
-    sends each notice once. *)
+(** Things worth telling the owner, as values: the caller decides how to render, store and
+    deliver them. Each notice has a {!key} so a caller that records the keys it sent sends
+    each notice once. *)
 
 open! Core
 
@@ -37,11 +37,7 @@ val key : t -> string
 val budget_changes : before:Budget_month.t -> after:Budget_month.t -> t list
 
 (** [Goal_reached] when a pot's balance moved from below its goal to the goal or above. *)
-val goal_reached
-  :  Pot.t
-  -> before:Money.Amount.t
-  -> after:Money.Amount.t
-  -> t option
+val goal_reached : Pot.t -> before:Money.Amount.t -> after:Money.Amount.t -> t option
 
 module Stable : sig
   module V1 : sig

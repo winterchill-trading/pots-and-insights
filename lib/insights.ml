@@ -85,17 +85,22 @@ let spend_of (i : Item.t) =
 ;;
 
 let by_category ~currency pairs =
-  List.fold pairs ~init:Category.Map.empty ~f:(fun acc ((i : Item.t), (a : Categorise.Assignment.t)) ->
-    match spend_of i with
-    | None -> acc
-    | Some spend ->
-      let is_purchase = Item.Flow.equal (Item.flow i) Spending in
-      Map.update acc a.category ~f:(fun prev ->
-        let total, count = Option.value prev ~default:(Amount.zero currency, 0) in
-        Amount.add_exn total spend, if is_purchase then count + 1 else count))
+  List.fold
+    pairs
+    ~init:Category.Map.empty
+    ~f:(fun acc ((i : Item.t), (a : Categorise.Assignment.t)) ->
+      match spend_of i with
+      | None -> acc
+      | Some spend ->
+        let is_purchase = Item.Flow.equal (Item.flow i) Spending in
+        Map.update acc a.category ~f:(fun prev ->
+          let total, count = Option.value prev ~default:(Amount.zero currency, 0) in
+          Amount.add_exn total spend, if is_purchase then count + 1 else count))
 ;;
 
-let sum currency amounts = List.fold amounts ~init:(Amount.zero currency) ~f:Amount.add_exn
+let sum currency amounts =
+  List.fold amounts ~init:(Amount.zero currency) ~f:Amount.add_exn
+;;
 
 let flow_of ~currency month pairs =
   let pairs = List.filter pairs ~f:(in_month month) in
@@ -121,24 +126,31 @@ let catalogue_rank (ctx : Context.t) =
 ;;
 
 let rank_merchants ~limit pairs =
-  List.fold pairs ~init:String.Map.empty ~f:(fun acc ((i : Item.t), (a : Categorise.Assignment.t)) ->
-    match Item.merchant i, spend_of i with
-    | Some name, Some spend ->
-      let key = Text.match_key name in
-      let is_purchase = Item.Flow.equal (Item.flow i) Spending in
-      Map.update acc key ~f:(function
-        | None ->
-          ( i.at
-          , { Merchant_total.name; category = a.category; total = spend; count = Bool.to_int is_purchase } )
-        | Some (latest, m) ->
-          let newer = Time_ns.( >= ) i.at latest in
-          ( (if newer then i.at else latest)
-          , { name = (if newer then name else m.name)
-            ; category = (if newer then a.category else m.category)
-            ; total = Amount.add_exn m.total spend
-            ; count = m.count + Bool.to_int is_purchase
-            } ))
-    | _ -> acc)
+  List.fold
+    pairs
+    ~init:String.Map.empty
+    ~f:(fun acc ((i : Item.t), (a : Categorise.Assignment.t)) ->
+      match Item.merchant i, spend_of i with
+      | Some name, Some spend ->
+        let key = Text.match_key name in
+        let is_purchase = Item.Flow.equal (Item.flow i) Spending in
+        Map.update acc key ~f:(function
+          | None ->
+            ( i.at
+            , { Merchant_total.name
+              ; category = a.category
+              ; total = spend
+              ; count = Bool.to_int is_purchase
+              } )
+          | Some (latest, m) ->
+            let newer = Time_ns.( >= ) i.at latest in
+            ( (if newer then i.at else latest)
+            , { name = (if newer then name else m.name)
+              ; category = (if newer then a.category else m.category)
+              ; total = Amount.add_exn m.total spend
+              ; count = m.count + Bool.to_int is_purchase
+              } ))
+      | _ -> acc)
   |> Map.data
   |> List.map ~f:snd
   |> List.filter ~f:(fun (m : Merchant_total.t) -> Amount.is_positive m.total)
@@ -149,15 +161,7 @@ let rank_merchants ~limit pairs =
   |> Fn.flip List.take limit
 ;;
 
-let summarise
-  ?(flow_months = 6)
-  ?(top_merchants = 5)
-  ctx
-  ~account
-  ~currency
-  ~month
-  items
-  =
+let summarise ?(flow_months = 6) ?(top_merchants = 5) ctx ~account ~currency ~month items =
   let pairs = categorised ctx ~account ~currency items in
   let this = List.filter pairs ~f:(in_month month) in
   let before = List.filter pairs ~f:(in_month (Calendar_month.prev month)) in
@@ -178,7 +182,9 @@ let summarise
       let share =
         if Amount.is_positive spending
         then
-          Percentage.of_ratio ~num:(Amount.minor_units total) ~den:(Amount.minor_units spending)
+          Percentage.of_ratio
+            ~num:(Amount.minor_units total)
+            ~den:(Amount.minor_units spending)
           |> Result.ok
         else None
       in

@@ -1,5 +1,5 @@
-(** Round-ups: the change from rounding each card purchase up to a whole unit, saved
-    into a pot.
+(** Round-ups: the change from rounding each card purchase up to a whole unit, saved into
+    a pot.
 
     A purchase of 3.40 with a unit of 1.00 rounds up by 0.60; a purchase of exactly 4.00
     by nothing. A multiplier saves that change several times over (2x saves 1.20). Only
@@ -18,14 +18,19 @@ type t = private
   }
 [@@deriving sexp, compare, equal]
 
-val create : pot:Pot_id.t -> unit:Money.Amount.t -> ?multiplier:int -> unit -> t Or_error.t
+val create
+  :  pot:Pot_id.t
+  -> unit:Money.Amount.t
+  -> ?multiplier:int
+  -> unit
+  -> t Or_error.t
 
 (** The round-up of a purchase of [spend] (a positive amount). Fails on a currency other
     than the unit's. *)
 val of_spend : t -> spend:Money.Amount.t -> Money.Amount.t Or_error.t
 
-(** The round-up of an item: [Some] for a completed card purchase in the unit's
-    currency, even when it rounds up by zero. *)
+(** The round-up of an item: [Some] for a completed card purchase in the unit's currency,
+    even when it rounds up by zero. *)
 val of_item : t -> Item.t -> Money.Amount.t option
 
 (** The round-ups of the account's items in [[from, until)], summed. *)

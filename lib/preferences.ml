@@ -53,7 +53,11 @@ let set_merchant_rule t ~merchant c =
 ;;
 
 let set_payee_rule t key c = { t with payees = change t.payees key c }
-let set_schedule_category t ~schedule c = { t with schedules = change t.schedules schedule c }
+
+let set_schedule_category t ~schedule c =
+  { t with schedules = change t.schedules schedule c }
+;;
+
 let overrides t = Map.to_alist t.overrides
 let merchant_rules t = Map.to_alist t.merchants
 let payee_rules t = Map.to_alist t.payees

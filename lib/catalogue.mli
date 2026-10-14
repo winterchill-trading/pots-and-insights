@@ -18,8 +18,8 @@ end
 
 type t [@@deriving sexp_of]
 
-(** Fails on a duplicate code, when [default] is not a spending category, when [income]
-    is not an [Income] one or [internal] not a [Neutral] one. [categories] is in picker
+(** Fails on a duplicate code, when [default] is not a spending category, when [income] is
+    not an [Income] one or [internal] not a [Neutral] one. [categories] is in picker
     order. *)
 val create
   :  categories:(Category.t * Group.t) list
@@ -28,10 +28,10 @@ val create
   -> internal:Category.t
   -> t Or_error.t
 
-(** A general-purpose set: [groceries], [eating_out], [transport], [travel],
-    [shopping], [entertainment], [bills], [health], [personal_care], [education],
-    [gifts], [cash], [fees] and [general] (the default) for spending, [income], and
-    [transfers] for internal movements. *)
+(** A general-purpose set: [groceries], [eating_out], [transport], [travel], [shopping],
+    [entertainment], [bills], [health], [personal_care], [education], [gifts], [cash],
+    [fees] and [general] (the default) for spending, [income], and [transfers] for
+    internal movements. *)
 val default : t
 
 (** In picker order. *)

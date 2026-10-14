@@ -1,8 +1,8 @@
 (** A customer's own category choices: user data, kept per owner by the caller.
 
     - an override files one item under a category;
-    - a merchant rule files every card item from a merchant (compared by
-      {!Text.match_key} of the merchant name);
+    - a merchant rule files every card item from a merchant (compared by {!Text.match_key}
+      of the merchant name);
     - a payee rule files every payment to a payee (by saved payee id when the payment has
       one, else by the payee name's match key);
     - a schedule category files every payment a standing order makes.
@@ -27,7 +27,6 @@ end
 type t [@@deriving sexp, compare, equal]
 
 val empty : t
-
 val override : t -> Item_id.t -> Category.t option
 val merchant_rule : t -> merchant:string -> Category.t option
 val payee_rule : t -> Item.Payee.t -> Category.t option

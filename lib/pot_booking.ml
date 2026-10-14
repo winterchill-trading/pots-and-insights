@@ -13,7 +13,11 @@ let close_key pot =
 ;;
 
 let open_account pot = Ledger.Record.Event.Account_opened (Pot.to_ledger_account pot)
-let balance balances (pot : Pot.t) = Ledger.Balances.balance balances pot.ledger_account pot.currency
+
+let balance balances (pot : Pot.t) =
+  Ledger.Balances.balance balances pot.ledger_account pot.currency
+;;
+
 let tag_deposit = "pot_deposit"
 let tag_withdrawal = "pot_withdrawal"
 let tag_close = "pot_close"
@@ -34,8 +38,8 @@ let entry (pot : Pot.t) ~tag ~from ~to_ ~amount ~idempotency_key ~at =
   |> Result.map_error ~f:(fun e -> Refusal.Ledger_refused e)
 ;;
 
-(* A key already booked: the same movement replays, another one is refused. The times
-   are left out of the comparison because a retry happens later than the first call. *)
+(* A key already booked: the same movement replays, another one is refused. The times are
+   left out of the comparison because a retry happens later than the first call. *)
 let same_movement (a : Ledger.Entry.t) (b : Ledger.Entry.t) =
   Ledger.Entry.Kind.equal a.kind b.kind
   && Ledger.Entry.Code.equal a.code b.code
@@ -59,16 +63,7 @@ let replay balances ~idempotency_key fresh =
                      (idempotency_key : Ledger.Idempotency_key.t)])))
 ;;
 
-let move
-  balances
-  (pot : Pot.t)
-  ~tag
-  ~from
-  ~to_
-  ~insufficient
-  ~amount
-  ~idempotency_key
-  ~at
+let move balances (pot : Pot.t) ~tag ~from ~to_ ~insufficient ~amount ~idempotency_key ~at
   =
   let open Result.Let_syntax in
   let%bind () = if Pot.is_active pot then Ok () else Error Refusal.Pot_closed in
@@ -89,7 +84,8 @@ let move
       else Ok ()
     in
     let%map (_ : Ledger.Balances.t) =
-      apply balances (Posted fresh) |> Result.map_error ~f:(fun e -> Refusal.Ledger_refused e)
+      apply balances (Posted fresh)
+      |> Result.map_error ~f:(fun e -> Refusal.Ledger_refused e)
     in
     fresh
 ;;

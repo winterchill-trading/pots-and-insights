@@ -20,7 +20,8 @@ module T = struct
          let w = Int.of_string (if negative then String.drop_prefix whole 1 else whole) in
          let v = (w * 10) + Int.of_string frac in
          if negative then -v else v
-       | _ -> of_sexp_error "Percentage.t_of_sexp: expected a number with one decimal" sexp)
+       | _ ->
+         of_sexp_error "Percentage.t_of_sexp: expected a number with one decimal" sexp)
     | List _ -> of_sexp_error "Percentage.t_of_sexp: expected an atom" sexp
   ;;
 end
@@ -36,7 +37,11 @@ let of_ratio ~num ~den =
   else (
     (* tenths = num * 1000 / den, rounded half away from zero, on exact integers. *)
     let n = Z.mul num (Z.of_int 1000) in
-    let q = Z.div (Z.add (Z.mul (Z.abs n) (Z.of_int 2)) (Z.abs den)) (Z.mul (Z.abs den) (Z.of_int 2)) in
+    let q =
+      Z.div
+        (Z.add (Z.mul (Z.abs n) (Z.of_int 2)) (Z.abs den))
+        (Z.mul (Z.abs den) (Z.of_int 2))
+    in
     let negative = Z.sign n * Z.sign den < 0 in
     let q = if negative then Z.neg q else q in
     if Z.fits_int q

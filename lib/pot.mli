@@ -39,8 +39,8 @@ module Refusal : sig
         { key : string
         ; reason : string
         }
-    (** a key that is not a lower-case slug of at most 32 characters, a duplicate key,
-        too many fields, or a value that is empty, not UTF-8 or too long *)
+    (** a key that is not a lower-case slug of at most 32 characters, a duplicate key, too
+        many fields, or a value that is empty, not UTF-8 or too long *)
     | Too_many_open_pots of { max : int }
     | Pot_closed (** an edit or a movement on a closed pot *)
     | Already_closed
@@ -74,8 +74,8 @@ module Details : sig
     ; goal : Money.Amount.t option
     ; target_date : Date.t option
     ; cosmetics : (string * string) list
-    (** opaque key and value pairs such as [("colour", "teal"); ("icon", "...")];
-        stored sorted by key *)
+    (** opaque key and value pairs such as [("colour", "teal"); ("icon", "...")]; stored
+        sorted by key *)
     }
   [@@deriving sexp, compare, equal]
 end
@@ -85,7 +85,8 @@ type t = private
   ; owner : Owner_id.t
   ; account : Ledger.Account_id.t (** the parent currency account *)
   ; currency : Money.Currency.t
-  ; ledger_account : Ledger.Account_id.t (** the pot's own account, {!ledger_account_id} *)
+  ; ledger_account : Ledger.Account_id.t
+  (** the pot's own account, {!ledger_account_id} *)
   ; details : Details.t
   ; status : Status.t
   ; created_at : Time_ns.Alternate_sexp.t
@@ -95,8 +96,8 @@ type t = private
 (** [pot:<id>], the id of the pot's ledger account. *)
 val ledger_account_id : Pot_id.t -> Ledger.Account_id.t
 
-(** A new active pot. [open_pots] is the number of the owner's pots that are not closed;
-    a target date before [today] is refused. *)
+(** A new active pot. [open_pots] is the number of the owner's pots that are not closed; a
+    target date before [today] is refused. *)
 val create
   :  ?limits:Limits.t
   -> id:Pot_id.t
@@ -110,12 +111,7 @@ val create
   -> (t, Refusal.t) Result.t
 
 (** Replaces the editable fields of an active pot, with the same checks as {!create}. *)
-val update
-  :  ?limits:Limits.t
-  -> t
-  -> today:Date.t
-  -> Details.t
-  -> (t, Refusal.t) Result.t
+val update : ?limits:Limits.t -> t -> today:Date.t -> Details.t -> (t, Refusal.t) Result.t
 
 (** Marks the pot closed. The caller books {!Pot_booking.close} first. *)
 val close : t -> at:Time_ns.t -> (t, Refusal.t) Result.t

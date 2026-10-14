@@ -6,7 +6,9 @@ let of_string_or_error s =
      && String.for_all s ~f:(fun c ->
        Char.is_lowercase c || Char.is_digit c || Char.equal c '_')
   then Ok s
-  else Or_error.error_s [%message "Pots_and_insights.Category: not a slug" ~category:(s : string)]
+  else
+    Or_error.error_s
+      [%message "Pots_and_insights.Category: not a slug" ~category:(s : string)]
 ;;
 
 module T = struct

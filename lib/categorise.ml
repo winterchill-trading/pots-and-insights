@@ -80,7 +80,8 @@ let user catalogue prefs (item : Item.t) =
                Preferences.schedule_category prefs ~schedule))
         , Schedule ))
     ; (fun () ->
-        usable (Option.bind (Item.payee item) ~f:(Preferences.payee_rule prefs)), Payee_rule)
+        ( usable (Option.bind (Item.payee item) ~f:(Preferences.payee_rule prefs))
+        , Payee_rule ))
     ]
   in
   List.find_map first ~f:(fun f ->

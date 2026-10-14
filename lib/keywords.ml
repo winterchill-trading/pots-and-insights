@@ -52,7 +52,9 @@ let default =
 let find t text =
   let text = padded text in
   List.find_map t ~f:(fun e ->
-    if String.is_substring text ~substring:e.key then Some (e.keyword, e.category) else None)
+    if String.is_substring text ~substring:e.key
+    then Some (e.keyword, e.category)
+    else None)
 ;;
 
 let to_list t = List.map t ~f:(fun e -> e.keyword, e.category)

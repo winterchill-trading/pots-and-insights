@@ -114,7 +114,8 @@ let ledger_account_id id = Ledger.Account_id.of_string ("pot:" ^ Pot_id.to_strin
 let is_slug key =
   (not (String.is_empty key))
   && String.length key <= 32
-  && String.for_all key ~f:(fun c -> Char.is_lowercase c || Char.is_digit c || Char.equal c '_')
+  && String.for_all key ~f:(fun c ->
+    Char.is_lowercase c || Char.is_digit c || Char.equal c '_')
 ;;
 
 let check_cosmetics (limits : Limits.t) cosmetics =
@@ -252,7 +253,10 @@ let progress t ~balance =
       else
         (* Exact: floor (balance * 100 / goal) on minor units, no rounding up to 100 %
            while a minor unit is still missing. *)
-        Z.to_int (Z.fdiv (Z.mul (Amount.minor_units balance) (Z.of_int 100)) (Amount.minor_units goal))
+        Z.to_int
+          (Z.fdiv
+             (Z.mul (Amount.minor_units balance) (Z.of_int 100))
+             (Amount.minor_units goal))
     in
     Some
       { Progress.percent

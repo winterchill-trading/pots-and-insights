@@ -11,8 +11,8 @@
 
     A refund follows the purchase it refunds (its own merchant otherwise), income goes to
     the catalogue's [income] category and internal movements to [internal]. A stored
-    choice whose category is no longer a spending category of the catalogue is skipped,
-    so retiring a category never breaks old preferences. *)
+    choice whose category is no longer a spending category of the catalogue is skipped, so
+    retiring a category never breaks old preferences. *)
 
 open! Core
 
@@ -73,12 +73,11 @@ module Refusal : sig
     | Spending_only (** income and internal items keep their category *)
     | Refund_follows_purchase
     | Nothing_to_match
-    (** "all from this merchant" on an item without a merchant, or "all to this payee"
-        on one without a payee *)
+    (** "all from this merchant" on an item without a merchant, or "all to this payee" on
+        one without a payee *)
   [@@deriving sexp, compare, equal]
 
-  (** [unknown_category], [spending_only], [refund_follows_purchase],
-      [nothing_to_match]. *)
+  (** [unknown_category], [spending_only], [refund_follows_purchase], [nothing_to_match]. *)
   val code : t -> string
 end
 

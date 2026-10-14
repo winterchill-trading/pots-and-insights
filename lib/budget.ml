@@ -134,7 +134,8 @@ let set_amount ?(limits = Limits.default) t ~amount ~from =
   let%map () = check_amount limits ~currency:t.currency amount in
   { t with
     amounts =
-      List.filter t.amounts ~f:(fun (m, _) -> Calendar_month.( < ) m from) @ [ from, amount ]
+      List.filter t.amounts ~f:(fun (m, _) -> Calendar_month.( < ) m from)
+      @ [ from, amount ]
   }
 ;;
 
@@ -224,7 +225,9 @@ let progress ?near_percent t ~month ~spent ~now =
     ; remaining = Amount.sub_exn amount spent
     ; percent =
         (* The amount is positive, so the ratio always exists. *)
-        Percentage.of_ratio ~num:(Amount.minor_units spent) ~den:(Amount.minor_units amount)
+        Percentage.of_ratio
+          ~num:(Amount.minor_units spent)
+          ~den:(Amount.minor_units amount)
         |> Or_error.ok_exn
     ; status = status ?near_percent ~amount ~spent ()
     ; pace = pace ~amount ~spent ~month ~now

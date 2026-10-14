@@ -1,4 +1,5 @@
 (** Percentages with one decimal place, exact: an integer count of tenths of a percent.
+
     [123] is 12.3 %. No floats are involved anywhere. *)
 
 open! Core

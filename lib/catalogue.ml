@@ -22,7 +22,8 @@ let create ~categories ~default ~income ~internal =
   let%bind groups =
     match Category.Map.of_alist categories with
     | `Ok m -> Ok m
-    | `Duplicate_key c -> Or_error.error_s [%message "duplicate category" (c : Category.t)]
+    | `Duplicate_key c ->
+      Or_error.error_s [%message "duplicate category" (c : Category.t)]
   in
   let check c expected =
     match Map.find groups c with

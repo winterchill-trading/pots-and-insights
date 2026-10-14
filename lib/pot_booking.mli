@@ -12,8 +12,8 @@
 
     Every movement carries an idempotency key. Calling again with a key that is already
     booked for the same movement (same accounts, amount and kind, at any time) returns the
-    booked entry (a retried request), before any balance check, so a retry after the money moved still succeeds; the same key for a
-    different movement is refused. *)
+    booked entry (a retried request), before any balance check, so a retry after the money
+    moved still succeeds; the same key for a different movement is refused. *)
 
 open! Core
 
@@ -38,8 +38,8 @@ val deposit
   -> at:Time_ns.t
   -> (Ledger.Entry.t, Pot.Refusal.t) Result.t
 
-(** Moves [amount] from the pot back to the parent account. Refused as {!deposit}, or
-    when the pot's balance is below [amount]. *)
+(** Moves [amount] from the pot back to the parent account. Refused as {!deposit}, or when
+    the pot's balance is below [amount]. *)
 val withdraw
   :  Ledger.Balances.t
   -> Pot.t

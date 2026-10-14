@@ -26,7 +26,8 @@ let of_spend t ~spend =
   if not (Money.Currency.equal (Amount.currency spend) (Amount.currency t.unit))
   then
     Or_error.error_s
-      [%message "round-up in another currency" (spend : Amount.t) ~unit:(t.unit : Amount.t)]
+      [%message
+        "round-up in another currency" (spend : Amount.t) ~unit:(t.unit : Amount.t)]
   else (
     let u = Amount.minor_units t.unit in
     let s = Z.abs (Amount.minor_units spend) in

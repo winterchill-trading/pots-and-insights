@@ -27,8 +27,7 @@ module Source : sig
     | Card of
         { merchant : string
         ; merchant_category : Category.t option
-        (** the category the card network's merchant code maps to, if the caller has
-            one *)
+        (** the category the card network's merchant code maps to, if the caller has one *)
         }
     | Payment of
         { payee : Payee.t option
@@ -64,8 +63,7 @@ module Flow : sig
 end
 
 (** [Internal] for internal items; for the others, [Spending] when money left, and when
-    money came in [Refund] if [refund_of] is set or it is a card item, [Income]
-    otherwise. *)
+    money came in [Refund] if [refund_of] is set or it is a card item, [Income] otherwise. *)
 val flow : t -> Flow.t
 
 (** The merchant of a card item. *)

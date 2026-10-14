@@ -25,7 +25,13 @@ module type Env = sig
 
   val pot : Pot_id.t -> Pot.t option io
   val balances : unit -> Ledger.Balances.t io
-  val items : account:Ledger.Account_id.t -> from:Time_ns.t -> until:Time_ns.t -> Item.t list io
+
+  val items
+    :  account:Ledger.Account_id.t
+    -> from:Time_ns.t
+    -> until:Time_ns.t
+    -> Item.t list io
+
   val append : Ledger.Entry.t -> unit Or_error.t io
 end
 

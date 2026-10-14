@@ -26,7 +26,8 @@ let compute
   let zero = Money.Amount.zero currency in
   let mine =
     List.filter budgets ~f:(fun (b : Budget.t) ->
-      Ledger.Account_id.equal b.account account && Money.Currency.equal b.currency currency)
+      Ledger.Account_id.equal b.account account
+      && Money.Currency.equal b.currency currency)
   in
   let progress (b : Budget.t) =
     let spent =
