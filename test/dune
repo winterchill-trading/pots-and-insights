@@ -14,3 +14,7 @@
    (:standard -source-tree-root .)))
  (preprocess
   (pps ppx_jane)))
+
+(cram
+ (package pots-and-insights)
+ (deps %{bin:pots-and-insights}))
