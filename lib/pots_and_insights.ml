@@ -35,3 +35,6 @@ module Catalogue = Catalogue
 
 (** Statement items, the input of insights. *)
 module Item = Item
+
+(** Keyword lists that suggest a category from statement text. *)
+module Keywords = Keywords
