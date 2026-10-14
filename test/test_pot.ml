@@ -9,8 +9,10 @@ let show r =
      | Error e -> [%sexp Error (e : Pot.Refusal.t), (Pot.Refusal.code e : string)])
 ;;
 
-let create ?(open_pots = 0) d =
+let create ?(open_pots = 0) ?max_name_bytes ?allow_past_target_date d =
   Pot.create
+    ?max_name_bytes
+    ?allow_past_target_date
     ~id:pot_id
     ~owner
     ~account
@@ -78,6 +80,42 @@ let%expect_test "thirty code points of a multi-byte script fit" =
     ((30) 60)
     true
     false
+    |}]
+;;
+
+let%expect_test "a byte cap on names is optional" =
+  (* 20 Cyrillic letters: 20 code points, 40 bytes. *)
+  let name = String.concat (List.init 20 ~f:(fun _ -> "\xd0\xb6")) in
+  let ok r = print_s [%sexp (Result.is_ok r : bool)] in
+  ok (create (details name));
+  ok (create ~max_name_bytes:40 (details name));
+  show (create ~max_name_bytes:39 (details name));
+  [%expect {|
+    true
+    true
+    ((Error (Name_invalid too_long)) name_invalid)
+    |}]
+;;
+
+let%expect_test "past target dates are accepted only when asked, for imports" =
+  let d = details ~target_date:(date "2025-01-31") "Imported" in
+  show (create d);
+  show (create ~allow_past_target_date:false d);
+  show (create ~allow_past_target_date:true d);
+  let p = pot () in
+  show (Pot.update p ~today d);
+  show (Pot.update ~allow_past_target_date:true p ~today d);
+  [%expect
+    {|
+    ((Error Target_date_in_past) target_date_in_past)
+    ((Error Target_date_in_past) target_date_in_past)
+    (Ok
+     ((name Imported) (goal ()) (target_date (2025-01-31))
+      (cosmetics ((colour teal)))))
+    ((Error Target_date_in_past) target_date_in_past)
+    (Ok
+     ((name Imported) (goal ()) (target_date (2025-01-31))
+      (cosmetics ((colour teal)))))
     |}]
 ;;
 
