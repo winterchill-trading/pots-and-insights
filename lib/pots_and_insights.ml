@@ -46,4 +46,4 @@ module Preferences = Preferences
 module Categorise = Categorise
 
 (** Exact percentages with one decimal place. *)
-module Percent = Percent
+module Percentage = Percentage
