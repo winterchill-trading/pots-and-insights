@@ -59,3 +59,6 @@ module Budget_month = Budget_month
 
 (** Notices (budget near or over, goal reached) as values. *)
 module Notice = Notice
+
+(** Round-ups of card purchases into a pot. *)
+module Round_up = Round_up
