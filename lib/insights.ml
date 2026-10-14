@@ -161,7 +161,16 @@ let rank_merchants ~limit pairs =
   |> Fn.flip List.take limit
 ;;
 
-let summarise ?(flow_months = 6) ?(top_merchants = 5) ctx ~account ~currency ~month items =
+let summarise
+  ?(flow_months = 6)
+  ?(top_merchants = 5)
+  ?(share_rounding = Percentage.Rounding.default)
+  ctx
+  ~account
+  ~currency
+  ~month
+  items
+  =
   let pairs = categorised ctx ~account ~currency items in
   let this = List.filter pairs ~f:(in_month month) in
   let before = List.filter pairs ~f:(in_month (Calendar_month.prev month)) in
@@ -182,7 +191,8 @@ let summarise ?(flow_months = 6) ?(top_merchants = 5) ctx ~account ~currency ~mo
       let share =
         if Amount.is_positive spending
         then
-          Percentage.of_ratio
+          Percentage.of_ratio_rounded
+            ~rounding:share_rounding
             ~num:(Amount.minor_units total)
             ~den:(Amount.minor_units spending)
           |> Result.ok

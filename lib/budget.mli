@@ -169,9 +169,12 @@ module Progress : sig
   [@@deriving sexp, compare, equal]
 end
 
-(** Progress in [month], or [None] when the budget has no amount then. *)
+(** Progress in [month], or [None] when the budget has no amount then. [percent] rounds
+    exact halves with [rounding], default {!Percentage.Rounding.default} (half away from
+    zero); [status] does not depend on it. *)
 val progress
   :  ?near_percent:int
+  -> ?rounding:Percentage.Rounding.t
   -> t
   -> month:Calendar_month.t
   -> spent:Money.Amount.t

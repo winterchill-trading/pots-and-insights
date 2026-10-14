@@ -215,7 +215,7 @@ module Progress = struct
   [@@deriving sexp, compare, equal]
 end
 
-let progress ?near_percent t ~month ~spent ~now =
+let progress ?near_percent ?(rounding = Percentage.Rounding.default) t ~month ~spent ~now =
   Option.map (amount_for t month) ~f:(fun amount ->
     { Progress.budget = t.id
     ; target = t.target
@@ -225,7 +225,8 @@ let progress ?near_percent t ~month ~spent ~now =
     ; remaining = Amount.sub_exn amount spent
     ; percent =
         (* The amount is positive, so the ratio always exists. *)
-        Percentage.of_ratio
+        Percentage.of_ratio_rounded
+          ~rounding
           ~num:(Amount.minor_units spent)
           ~den:(Amount.minor_units amount)
         |> Or_error.ok_exn

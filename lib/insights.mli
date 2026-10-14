@@ -75,10 +75,13 @@ type t =
 [@@deriving sexp_of, compare, equal]
 
 (** The summary of [month]. [items] may hold other accounts, currencies and months; they
-    are filtered out. [flow_months] defaults to 6 and [top_merchants] to 5. *)
+    are filtered out. [flow_months] defaults to 6 and [top_merchants] to 5. Category
+    shares round exact halves with [share_rounding], default
+    {!Percentage.Rounding.default} (half away from zero). *)
 val summarise
   :  ?flow_months:int
   -> ?top_merchants:int
+  -> ?share_rounding:Percentage.Rounding.t
   -> Context.t
   -> account:Ledger.Account_id.t
   -> currency:Money.Currency.t

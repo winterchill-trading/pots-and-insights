@@ -246,3 +246,27 @@ let%test_unit "status agrees with remaining and percent" =
     | None -> assert false
     | Some pace -> assert (Money.Amount.( <= ) pace.expected p.amount))
 ;;
+
+let%expect_test "progress percent can round exact halves to even" =
+  (* 1.00 of 2000.00 is 0.05 %: an exact half between 0.0 and 0.1. *)
+  let b = budget Overall "2000.00" |> ok in
+  List.iter Percentage.Rounding.all ~f:(fun rounding ->
+    let p =
+      Budget.progress
+        ~rounding
+        b
+        ~month:oct
+        ~spent:(eur "1.00")
+        ~now:(time "2026-10-14 09:00:00Z")
+      |> Option.value_exn
+    in
+    print_s
+      [%sexp
+        (rounding : Percentage.Rounding.t)
+        , (p.percent : Percentage.t)
+        , (p.status : Budget.Status.t)]);
+  [%expect {|
+    (Half_away_from_zero 0.1 Under)
+    (Half_even 0.0 Under)
+    |}]
+;;
