@@ -41,3 +41,6 @@ module Keywords = Keywords
 
 (** A customer's own category choices: overrides and rules. *)
 module Preferences = Preferences
+
+(** Filing items under categories and recategorising them. *)
+module Categorise = Categorise
