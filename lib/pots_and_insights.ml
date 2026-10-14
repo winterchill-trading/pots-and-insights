@@ -47,3 +47,6 @@ module Categorise = Categorise
 
 (** Exact percentages with one decimal place. *)
 module Percentage = Percentage
+
+(** Monthly spending summaries per currency account. *)
+module Insights = Insights
