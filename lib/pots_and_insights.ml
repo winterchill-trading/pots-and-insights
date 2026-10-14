@@ -38,3 +38,6 @@ module Item = Item
 
 (** Keyword lists that suggest a category from statement text. *)
 module Keywords = Keywords
+
+(** A customer's own category choices: overrides and rules. *)
+module Preferences = Preferences
