@@ -32,3 +32,6 @@ module Category = Category
 
 (** The set of categories a bank offers and their groups. *)
 module Catalogue = Catalogue
+
+(** Statement items, the input of insights. *)
+module Item = Item
