@@ -44,3 +44,6 @@ module Preferences = Preferences
 
 (** Filing items under categories and recategorising them. *)
 module Categorise = Categorise
+
+(** Exact percentages with one decimal place. *)
+module Percent = Percent
