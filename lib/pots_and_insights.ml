@@ -26,3 +26,9 @@ module Pot = Pot
 
 (** Ledger entries for pot deposits, withdrawals and closing. *)
 module Pot_booking = Pot_booking
+
+(** Spending category codes. *)
+module Category = Category
+
+(** The set of categories a bank offers and their groups. *)
+module Catalogue = Catalogue
