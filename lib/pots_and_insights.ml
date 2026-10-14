@@ -23,3 +23,6 @@ module Text = Text
 
 (** Savings pots: owned sub-accounts with a goal and cosmetic fields. *)
 module Pot = Pot
+
+(** Ledger entries for pot deposits, withdrawals and closing. *)
+module Pot_booking = Pot_booking
