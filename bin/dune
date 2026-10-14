@@ -1,0 +1,7 @@
+(executable
+ (name main)
+ (public_name pots-and-insights)
+ (package pots-and-insights)
+ (libraries core core_unix.command_unix money ledger pots-and-insights)
+ (preprocess
+  (pps ppx_jane)))
