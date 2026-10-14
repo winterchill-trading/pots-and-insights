@@ -25,5 +25,5 @@ ledger entries this library returns to its own journal.
 - {!Pots_and_insights.Notice}: what to tell the owner, as values.
 
 All periods are calendar months in UTC ({!Pots_and_insights.Calendar_month}); all
-amounts are exact ({!Money.Amount}); percentages have one decimal place
+amounts are exact ([Money.Amount]); percentages have one decimal place
 ({!Pots_and_insights.Percentage}).

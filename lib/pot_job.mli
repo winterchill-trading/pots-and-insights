@@ -1,4 +1,4 @@
-(** Pot automation as {!Scheduler_core} jobs.
+(** Pot automation as [Scheduler_core] jobs.
 
     Two kinds of job run on a schedule:
     - [Top_up]: on each date, move the top-up amount (see {!Top_up.decide}) into the pot;

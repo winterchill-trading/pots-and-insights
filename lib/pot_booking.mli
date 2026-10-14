@@ -1,6 +1,6 @@
 (** Ledger entries that move money between a pot and its parent account.
 
-    Pure: each function takes the current {!Ledger.Balances.t} and returns an entry
+    Pure: each function takes the current [Ledger.Balances.t] and returns an entry
     already checked against it, so the caller appends it to its journal (or drops it).
     Both legs are in the pot's currency and the entry has code [Transfer_intraledger]:
 
