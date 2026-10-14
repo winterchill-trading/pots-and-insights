@@ -62,3 +62,6 @@ module Notice = Notice
 
 (** Round-ups of card purchases into a pot. *)
 module Round_up = Round_up
+
+(** Scheduled top-ups of a pot. *)
+module Top_up = Top_up
