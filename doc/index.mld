@@ -1,0 +1,29 @@
+{0 pots-and-insights}
+
+Savings pots and spending insights as pure values over a double-entry ledger. Nothing
+here persists: a service stores pots, budgets, preferences and items, and appends the
+ledger entries this library returns to its own journal.
+
+{1 Savings pots}
+
+- {!Pots_and_insights.Pot}: a pot, its goal, target date and cosmetic fields, limits and
+  refusals.
+- {!Pots_and_insights.Pot_booking}: deposits, withdrawals and closing as ledger entries
+  under idempotency keys, and the pot's movement history.
+- {!Pots_and_insights.Round_up} and {!Pots_and_insights.Top_up}: automatic saving.
+- {!Pots_and_insights.Pot_job}: both as jobs for the scheduler-core runner.
+
+{1 Spending insights}
+
+- {!Pots_and_insights.Item}: the statement items insights read.
+- {!Pots_and_insights.Catalogue}, {!Pots_and_insights.Keywords} and
+  {!Pots_and_insights.Preferences}: what decides a category.
+- {!Pots_and_insights.Categorise}: filing and recategorising items.
+- {!Pots_and_insights.Insights}: a month by category, merchant and money flow.
+- {!Pots_and_insights.Budget} and {!Pots_and_insights.Budget_month}: monthly budgets with
+  under, near and over states and pace.
+- {!Pots_and_insights.Notice}: what to tell the owner, as values.
+
+All periods are calendar months in UTC ({!Pots_and_insights.Calendar_month}); all
+amounts are exact ({!Money.Amount}); percentages have one decimal place
+({!Pots_and_insights.Percentage}).
